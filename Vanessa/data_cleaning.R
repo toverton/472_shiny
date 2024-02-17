@@ -38,12 +38,17 @@ lat_long_df <- tibble(longitude = as.numeric(lean_df$longitude),
                       incident_id = lean_df$incident_id) |>
   drop_na()
 
+#taking the age column, parsing through the text, and turning it into mean age
+ages_to_mean_age <- function(a_str){
+  a_str |>
+    str_extract_all("(?<=::)\\d+") |> 
+    unlist() |> 
+    as.numeric() |> 
+    mean() -> mean_age
+  mean_age <- format(round(mean_age, 2), nsmall = 2)
+  return(mean_age)
+}
 
-test_string <- "0::51||1::40||2::9||3::5||4::2||5::15" 
-
-test_string |>
-  str_extract_all("::[0-9]+")
-
-
-
-
+final_df$participant_age <- sapply(final_df$participant_age, ages_to_mean_age)
+final_df |> 
+  rename(participant_mean_age = participant_age) -> final_df
