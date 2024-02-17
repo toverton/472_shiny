@@ -51,4 +51,4 @@ ages_to_mean_age <- function(a_str){
 
 final_df$participant_age <- sapply(final_df$participant_age, ages_to_mean_age)
 final_df |> 
-  rename(participant_mean_age = participant_age) -> final_df
+  rename(participant_mean_age = participant_age) -> final_df #renaming age column
