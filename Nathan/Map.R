@@ -8,7 +8,7 @@ gunViolence = na.omit(gunViolence)
 map = leaflet() %>% 
   addTiles() %>% 
   setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
-  addCircleMarkers(, lng = gunViolence$longitude, lat = gunViolence$latitude, radius = 1)
+  addCircleMarkers(lng = gunViolence$longitude, lat = gunViolence$latitude, radius = 1)
 map
 
 
