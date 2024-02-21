@@ -49,25 +49,26 @@ lean_df |>
 
 #making a df to convert long/lat to counties
 #can't get it to work, also lots of NAs
-lat_long_df <- tibble(longitude = as.numeric(lean_df$longitude), 
-                      latitude = as.numeric(lean_df$latitude), 
-                      incident_id = lean_df$incident_id) |>
-  drop_na()
 
-#taking the age column, parsing through the text, and turning it into mean age
-ages_to_mean_age <- function(a_str){
-  if(is.na(a_str)){
-    return(NA)
-  }
-  a_str |>
-    str_extract_all("(?<=::)\\d+") |> 
-    unlist() |> 
-    as.numeric( ) |> 
-    mean() -> mean_age
-  mean_age <- format(round(mean_age, 2), nsmall = 2)
-  return(mean_age)
-}
-
-final_df$participant_age <- sapply(final_df$participant_age, ages_to_mean_age)
-final_df |> 
-  rename(participant_mean_age = participant_age) -> final_df #renaming age column
+# lat_long_df <- tibble(longitude = as.numeric(lean_df$longitude), 
+#                       latitude = as.numeric(lean_df$latitude), 
+#                       incident_id = lean_df$incident_id) |>
+#   drop_na()
+# 
+# #taking the age column, parsing through the text, and turning it into mean age
+# ages_to_mean_age <- function(a_str){
+#   if(is.na(a_str)){
+#     return(NA)
+#   }
+#   a_str |>
+#     str_extract_all("(?<=::)\\d+") |> 
+#     unlist() |> 
+#     as.numeric( ) |> 
+#     mean() -> mean_age
+#   mean_age <- format(round(mean_age, 2), nsmall = 2)
+#   return(mean_age)
+# }
+# 
+# final_df$participant_age <- sapply(final_df$participant_age, ages_to_mean_age)
+# final_df |> 
+#   rename(participant_mean_age = participant_age) -> final_df #renaming age column
