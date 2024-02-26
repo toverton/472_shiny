@@ -8,6 +8,17 @@ library(forcats)
 #reading in original file
 orig_df <- read_csv("./gun_violence_data.csv")
 
+#-- For Nathan - Disregard Otherwise --#
+str_to_date <- function(str_date){
+  return(str_date |>
+           as.Date("%m/%d/%Y"))
+}
+
+if(is.character(orig_df$date)){
+  orig$df <- sapply(orig_df$date, str_to_date)
+}
+#-----                            -----#
+
 #removing variables 
 orig_df |> 
   select(-notes, 
@@ -105,6 +116,11 @@ final_df |>
        title = "2013 - 2018 Fatalities per 100,000 by State") + 
   scale_fill_gradient(low = "dodgerblue2", high = "firebrick1") + 
   coord_flip()
+
+
+
+
+
 
 
 
