@@ -6,7 +6,7 @@ library(forcats)
 #library(latlong2)
 
 #reading in original file
-orig_df <- read_csv("./gun-violence-data_01-2013_03-2018.csv")
+orig_df <- read_csv("./gun_violence_data.csv")
 
 #removing variables 
 orig_df |> 
@@ -87,6 +87,7 @@ final_df <- final_df |>
 final_df |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
 
+#making a plot of above 
 final_df |>
   group_by(state) |>
   summarize(total = sum(per_hthous_killed)) |>
@@ -97,11 +98,15 @@ final_df |>
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
-        ) + 
+        axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(hjust = 0.5)) + 
   labs(x = "Fatalities per 100,000", 
-       y = "State", 
+       y = "State or District", 
        title = "2013 - 2018 Fatalities per 100,000 by State") + 
-  scale_fill_gradient(low = "dodgerblue2", high = "firebrick1")
+  scale_fill_gradient(low = "dodgerblue2", high = "firebrick1") + 
+  coord_flip()
+
+
 
 #making a df to convert long/lat to counties
 #can't get it to work, also lots of NAs
