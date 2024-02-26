@@ -6,7 +6,7 @@ library(forcats)
 #library(latlong2)
 
 #reading in original file
-orig_df <- read_csv("~/Desktop/Statistics/STAT 472 - Project/gun_violence_data.csv")
+orig_df <- read_csv("./gun-violence-data_01-2013_03-2018.csv")
 
 #removing variables 
 orig_df |> 
@@ -52,7 +52,7 @@ lean_df |>
   add_column(date_decomp, .after = "date") -> final_df
 
 #adding yearly population data
-yearly_pop <- read_excel("~/Desktop/Statistics/STAT 472 - Project/yearly_pop.xlsx")
+yearly_pop <- read_excel("./yearly_pop.xlsx")
 
 yearly_pop |> 
   filter(!row_number() %in% seq(1:8)) |> 
