@@ -1,4 +1,8 @@
 library(tidyverse)
+library(readxl)
+library(reshape2)
+library(ggplot2)
+library(forcats) 
 #library(latlong2)
 
 #reading in original file
@@ -40,12 +44,64 @@ las_vegas <- tibble(incident_id = "0",
 lean_df <- rbind(lean_df, las_vegas)
 
 #adding more columns for date information
-date_decomp <- tibble(incident_year = year(lean_df$date),
+date_decomp <- tibble(year = year(lean_df$date),
                       incident_month = month(lean_df$date, label = TRUE),
                       incident_day = day(lean_df$date),
                       incident_wday = wday(lean_df$date, label = TRUE))
 lean_df |>
   add_column(date_decomp, .after = "date") -> final_df
+
+#adding yearly population data
+yearly_pop <- read_excel("~/Desktop/Statistics/STAT 472 - Project/yearly_pop.xlsx")
+
+yearly_pop |> 
+  filter(!row_number() %in% seq(1:8)) |> 
+  select(-c(2, 3, 4, 5, 6, 13)) |> 
+  rename(state = 1, 
+        "2013" = 2, 
+        "2014" = 3,
+        "2015" = 4,
+        "2016" = 5,
+        "2017" = 6,
+        "2018" = 7) |> 
+  na.omit() -> yearly_pop_final
+
+remove_state_periods <- function(a_state_str) {
+  a_state_str |> 
+    str_replace("\\.", "") -> period_rm_state
+  return(period_rm_state)
+}
+
+yearly_pop_final$state <- sapply(yearly_pop_final$state, remove_state_periods)
+
+yearly_pop_final |>
+  melt(na.rm = FALSE, value.name = "state_population", id = "state") |>
+  rename(year = variable) -> yearly_pop_melt
+
+yearly_pop_melt$year <- as.numeric(as.character(yearly_pop_melt$year))
+
+final_df <- final_df |>
+  inner_join(yearly_pop_melt, by=c("state","year"))
+
+#adding number killed per 100,000
+final_df |>
+  mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
+
+final_df |>
+  group_by(state) |>
+  summarize(total = sum(per_hthous_killed)) |>
+  ggplot(aes(y = reorder(state, -total), x = total, fill = total)) + 
+  geom_col(width = 0.5, position = position_dodge(0.2), show.legend = F) +
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        ) + 
+  labs(x = "Fatalities per 100,000", 
+       y = "State", 
+       title = "2013 - 2018 Fatalities per 100,000 by State") + 
+  scale_fill_gradient(low = "dodgerblue2", high = "firebrick1")
 
 #making a df to convert long/lat to counties
 #can't get it to work, also lots of NAs
@@ -54,21 +110,3 @@ lean_df |>
 #                       latitude = as.numeric(lean_df$latitude), 
 #                       incident_id = lean_df$incident_id) |>
 #   drop_na()
-# 
-# #taking the age column, parsing through the text, and turning it into mean age
-# ages_to_mean_age <- function(a_str){
-#   if(is.na(a_str)){
-#     return(NA)
-#   }
-#   a_str |>
-#     str_extract_all("(?<=::)\\d+") |> 
-#     unlist() |> 
-#     as.numeric( ) |> 
-#     mean() -> mean_age
-#   mean_age <- format(round(mean_age, 2), nsmall = 2)
-#   return(mean_age)
-# }
-# 
-# final_df$participant_age <- sapply(final_df$participant_age, ages_to_mean_age)
-# final_df |> 
-#   rename(participant_mean_age = participant_age) -> final_df #renaming age column
