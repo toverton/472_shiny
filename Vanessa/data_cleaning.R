@@ -14,7 +14,7 @@ str_to_date <- function(str_date){
            as.Date("%m/%d/%Y"))
 }
 
-if(is.Date(orig_df$date) = F){
+if(is.Date(orig_df$date) == F){
   orig$df <- sapply(orig_df$date, str_to_date)
 }
 #-----                            -----#
