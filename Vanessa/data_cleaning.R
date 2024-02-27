@@ -116,13 +116,7 @@ final_df |>
        title = "2013 - 2018 Fatalities per 100,000 by State") + 
   scale_fill_gradient(low = "dodgerblue2", high = "firebrick1") + 
   coord_flip()
-
-
-
-
-
-
-
+#ggsave("per_cap_plot.png", width = 14, height = 7)
 
 #making a df to convert long/lat to counties
 #can't get it to work, also lots of NAs
