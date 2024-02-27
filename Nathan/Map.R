@@ -85,13 +85,15 @@ map_2013
 
 # make a for loop? 
 
+mapDf = matrix(NA, nrow = 6, ncol = 1)
 yrs = list("2013", "2014", "2015", "2016", "2017", "2018")
-for (i in yrs) {
-  df = filter(gunViolence, year == i)
-  mapTest = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
-    addCircleMarkers(lng = df$longitude, lat = df$latitude, 
-                     radius = 1, color = "green")
-  
+for (i in 1:6) {
+  for (j in yrs) {
+    df = filter(gunViolence, year == j)
+    mapDf[i,1] = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+      addCircleMarkers(lng = df$longitude, lat = df$latitude, 
+                       radius = 1, color = "green")
+  }
 }
 
-mapTest
+mapDf[1,1]
