@@ -62,4 +62,6 @@ map_2013 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, z
                    radius = 1, color = "blue")
 map_2013
 
+# make a for loop? 
+
 
