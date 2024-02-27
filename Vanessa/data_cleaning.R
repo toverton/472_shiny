@@ -2,7 +2,6 @@ library(tidyverse)
 library(readxl)
 library(reshape2)
 library(ggplot2)
-library(forcats) 
 #library(latlong2)
 
 #reading in original file
