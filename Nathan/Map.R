@@ -15,8 +15,8 @@ library(leaflet)
 gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
 
 # desktop path(s)
-#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
+gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+# gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
 
 # remove NA entries & variables that are not needed to make the map
 gunViolence = na.omit(gunViolence)
@@ -38,7 +38,19 @@ gunViolence = subset(gunViolence, select = -c(notes,
                                               location_description, 
                                               incident_id))
 
+#reading in original file
+orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
 
+#-- For Nathan - Disregard Otherwise --#
+str_to_date <- function(str_date){
+  return(str_date |>
+           as.Date("%m/%d/%Y"))
+}
+
+if(is.Date(orig_df$date) == F){
+  orig$df <- sapply(orig_df$date, str_to_date)
+}
+#-----                            -----#
 
 
 
