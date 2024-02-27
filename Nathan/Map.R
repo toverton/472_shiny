@@ -12,11 +12,11 @@ library(leaflet)
 # import original data 
 
 # laptop path
-gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
+#gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
 
 # desktop path(s)
 gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-# gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
+#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
 
 # remove NA entries & variables that are not needed to make the map
 gunViolence = na.omit(gunViolence)
@@ -37,11 +37,11 @@ gunViolence = subset(gunViolence, select = -c(notes,
                                               incident_characteristics, 
                                               location_description, 
                                               incident_id))
-
+#-----                        -----#
 #reading in original file
 orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
 
-#-- For Nathan - Disregard Otherwise --#
+
 str_to_date <- function(str_date){
   return(str_date |>
            as.Date("%m/%d/%Y"))
@@ -50,9 +50,18 @@ str_to_date <- function(str_date){
 if(is.Date(orig_df$date) == F){
   orig$df <- sapply(orig_df$date, str_to_date)
 }
-#-----                            -----#
 
 
+date_decomp <- tibble(year = year(orig_df$date),
+                      incident_month = month(orig_df$date, label = TRUE),
+                      incident_day = day(orig_df$date),
+                      incident_wday = wday(orig_df$date, label = TRUE))
+orig_df |>
+  add_column(date_decomp, .after = "date") -> final_df
+
+gunViolence =  final_df
+
+#-----                        -----#
 
 # create map using Leaflet package
 originalMap = leaflet() %>% 
@@ -76,4 +85,13 @@ map_2013
 
 # make a for loop? 
 
+yrs = list("2013", "2014", "2015", "2016", "2017", "2018")
+for (i in yrs) {
+  df = filter(gunViolence, year == i)
+  mapTest = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+    addCircleMarkers(lng = df$longitude, lat = df$latitude, 
+                     radius = 1, color = "green")
+  
+}
 
+mapTest
