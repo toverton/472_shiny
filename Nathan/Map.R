@@ -15,8 +15,8 @@ library(leaflet)
 gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
 
 # desktop path(s)
-gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-#gunViolence2 = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
+#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
 
 # remove NA entries & variables that are not needed to make the map
 gunViolence = na.omit(gunViolence)
@@ -33,21 +33,14 @@ gunViolence = subset(gunViolence, select = -c(notes,
                                               participant_type,
                                               sources, 
                                               state_house_district, 
-                                              state_senate_district))
+                                              state_senate_district, 
+                                              incident_characteristics, 
+                                              location_description, 
+                                              incident_id))
 
 
-# convert gunViolence$date column from character to string
-str_to_date <- function(str_date) {
-  return(str_date |>
-           as.Date("%m/%d/%Y"))
-}
 
-# using str_to_date function & dplyr, add the newly formatted date column to the dataset
-gunViolence = gunViolence %>% mutate(date_string = str_to_date(gunViolence$date))
 
-gunViolence = gunViolence %>% dplyr::mutate(year = lubridate::year(date_string),
-                              month = lubridate::month(date_string),
-                              day = lubridate::day(date_string))
 
 # create map using Leaflet package
 originalMap = leaflet() %>% 
@@ -59,5 +52,14 @@ originalMap = leaflet() %>%
                    radius = 0.5, color = "red")
 # original map output
 originalMap
+
+
+# starting to filter
+# filter() year = 2013
+gunViolence_2013 = filter(gunViolence, year == "2013")
+map_2013 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2013$longitude, lat = gunViolence_2013$latitude, 
+                   radius = 1, color = "blue")
+map_2013
 
 
