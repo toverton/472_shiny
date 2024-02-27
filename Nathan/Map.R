@@ -1,12 +1,15 @@
 # Packages:
-library(leaflet)
 library(readr)
 library(dplyr)
 library(tidyr)
 library(tidyverse)
 library(lubridate)
+library(readxl)
+library(ggplot2)
+library(forcats)
+library(leaflet)
 
-# import data 
+# import original data 
 
 # laptop path
 gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
@@ -39,10 +42,6 @@ str_to_date <- function(str_date) {
            as.Date("%m/%d/%Y"))
 }
 
-if(is.Date(gunViolence$date) == F){
-  orig$df <- sapply(gunViolence$date, str_to_date)
-}
-
 # using str_to_date function & dplyr, add the newly formatted date column to the dataset
 gunViolence = gunViolence %>% mutate(date_string = str_to_date(gunViolence$date))
 
@@ -51,12 +50,14 @@ gunViolence = gunViolence %>% dplyr::mutate(year = lubridate::year(date_string),
                               day = lubridate::day(date_string))
 
 # create map using Leaflet package
-map = leaflet() %>% 
+originalMap = leaflet() %>% 
   addTiles() %>% 
-  # Zoom in on USA
+  # Zoom in on (mainland) USA
   setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addCircleMarkers(lng = gunViolence$longitude, 
                    lat = gunViolence$latitude, 
-                   radius = 1, color = "red")
-# output
-map
+                   radius = 0.5, color = "red")
+# original map output
+originalMap
+
+
