@@ -19,7 +19,7 @@ gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-
 #gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
 
 # remove NA entries & variables that are not needed to make the map
-gunViolence = na.omit(gunViolence)
+# gunViolence = na.omit(gunViolence)
 gunViolence = subset(gunViolence, select = -c(notes, 
                                               address, 
                                               incident_url, 
@@ -37,6 +37,7 @@ gunViolence = subset(gunViolence, select = -c(notes,
                                               incident_characteristics, 
                                               location_description, 
                                               incident_id))
+
 #-----                        -----#
 #reading in original file
 orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
@@ -59,7 +60,7 @@ date_decomp <- tibble(year = year(orig_df$date),
 orig_df |>
   add_column(date_decomp, .after = "date") -> final_df
 
-gunViolence =  final_df
+gunViolence = final_df
 
 #-----                        -----#
 
@@ -76,24 +77,25 @@ originalMap
 
 
 # starting to filter
-# filter() year = 2013
+
+# 2013 map data
 gunViolence_2013 = filter(gunViolence, year == "2013")
 map_2013 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
   addCircleMarkers(lng = gunViolence_2013$longitude, lat = gunViolence_2013$latitude, 
-                   radius = 1, color = "blue")
+                   radius = 1, color = "maroon")
 map_2013
 
-# make a for loop? 
+# 2014 map data
+gunViolence_2014 = filter(gunViolence, year == "2014")
+map_2014 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2014$longitude, lat = gunViolence_2014$latitude, 
+                   radius = 1, color = "orange")
+map_2014
 
-mapDf = matrix(NA, nrow = 6, ncol = 1)
-yrs = list("2013", "2014", "2015", "2016", "2017", "2018")
-for (i in 1:6) {
-  for (j in yrs) {
-    df = filter(gunViolence, year == j)
-    mapDf[i,1] = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
-      addCircleMarkers(lng = df$longitude, lat = df$latitude, 
-                       radius = 1, color = "green")
-  }
-}
+# 2015 map data
+gunViolence_2015 = filter(gunViolence, year == "2015")
+map_2015 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2015$longitude, lat = gunViolence_2015$latitude, 
+                   radius = 1, color = "#FFDB58")
+map_2015
 
-mapDf[1,1]
