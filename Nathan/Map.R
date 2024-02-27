@@ -4,11 +4,18 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(tidyverse)
+library(lubridate)
 
 # import data 
+
+# laptop path
 gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
 
-# removing NA entries & variables that are not needed to make the map
+# desktop path(s)
+gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+#gunViolence2 = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
+
+# remove NA entries & variables that are not needed to make the map
 gunViolence = na.omit(gunViolence)
 gunViolence = subset(gunViolence, select = -c(notes, 
                                               address, 
@@ -25,6 +32,24 @@ gunViolence = subset(gunViolence, select = -c(notes,
                                               state_house_district, 
                                               state_senate_district))
 
+
+# convert gunViolence$date column from character to string
+str_to_date <- function(str_date) {
+  return(str_date |>
+           as.Date("%m/%d/%Y"))
+}
+
+if(is.Date(gunViolence$date) == F){
+  orig$df <- sapply(gunViolence$date, str_to_date)
+}
+
+# using str_to_date function & dplyr, add the newly formatted date column to the dataset
+gunViolence = gunViolence %>% mutate(date_string = str_to_date(gunViolence$date))
+
+gunViolence = gunViolence %>% dplyr::mutate(year = lubridate::year(date_string),
+                              month = lubridate::month(date_string),
+                              day = lubridate::day(date_string))
+
 # create map using Leaflet package
 map = leaflet() %>% 
   addTiles() %>% 
@@ -35,31 +60,3 @@ map = leaflet() %>%
                    radius = 1, color = "red")
 # output
 map
-
-las_vegas <- tibble(incident_id = "0", 
-                    date = date("2017-10-01"), 
-                    state = "Nevada", 
-                    city_or_county = "Clark (county)", 
-                    n_killed = 59, 
-                    n_injured = 489, 
-                    gun_type = NA, 
-                    incident_characteristics = NA, 
-                    latitude = 36.095, 
-                    location_description = "Hotel", 
-                    longitude = -115.171667, 
-                    n_guns_involved = 24, 
-                    participant_age = 64, 
-                    participant_age_group = NA, 
-                    participant_gender = "0::Male")
-gunViolence <- rbind(gunViolence, las_vegas)
-
-
-date_decomp <- tibble(year = year(gunViolence$date),
-                      incident_month = month(gunViolence$date, label = TRUE),
-                      incident_day = day(gunViolence$date), label = TRUE)
-
-
-gunViolence$date = as_date(as.POSIXct(gunViolence$date))
-gunViolence %>% dplyr::mutate(year = lubridate::year(date),
-                              month = lubridate::month(date),
-                              day = lubridate::day(date))
