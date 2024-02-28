@@ -1,5 +1,6 @@
 library(tidyverse)
 library(ggplot2)
+library(plotly)
 
 ##                                                        ##
 ##---- Remember to load final_df from data_cleaning.R ----##
@@ -41,4 +42,25 @@ final_df |>
        title = "2013 - 2018 Total Fatalties by Month") + 
   stat_summary(fun.y = mean, geom = "line", aes(group = 1), linetype = "dashed")
 
-
+final_df |>
+  filter(year == 2017) |>
+  group_by(date) |>
+  summarize(total_killed = sum(n_killed), 
+            total_injured = sum(n_injured)) |>
+  ggplot() + 
+  geom_line(aes(x = date, y = total_killed, color = "Killed"), 
+            size = 0.5) + 
+  geom_line(aes(x = date, y = total_injured, color = "Injured"), 
+            size = 0.5) + 
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5),
+        legend.title=element_blank(),
+        legend.position = c(.92, .35), 
+        legend.text=element_text(size = 11)) + 
+  scale_color_manual(values = c("#E58EFF", "firebrick1")) + 
+  labs(x = "Date", y = "Total Number of People", title = "Total Injuries and Fatalities in 2017")
+#ggsave("2017_time_series_plot.png", width = 14, height = 7)
