@@ -14,7 +14,7 @@ str_to_date <- function(str_date){
 }
 
 if(is.Date(orig_df$date) == F){
-  orig$df <- sapply(orig_df$date, str_to_date)
+  orig_df$df <- sapply(orig_df$date, str_to_date)
 }
 #-----                            -----#
 
