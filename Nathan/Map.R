@@ -12,10 +12,10 @@ library(leaflet)
 # import original data 
 
 # laptop path
-#gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
+gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
 
 # desktop path(s)
-gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
 #gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
 
 # remove NA entries & variables that are not needed to make the map
@@ -40,7 +40,8 @@ gunViolence = subset(gunViolence, select = -c(notes,
 
 #-----                        -----#
 #reading in original file
-orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+#orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+orig_df <- read_csv("C:/Users/natha/OneDrive/Desktop/472_shiny/gun_violence_data.csv")
 
 
 str_to_date <- function(str_date){
