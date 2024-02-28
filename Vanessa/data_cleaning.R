@@ -97,6 +97,8 @@ final_df <- final_df |>
 final_df |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
 
+#write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
+
 #making a df to convert long/lat to counties
 #can't get it to work, also lots of NAs
 
