@@ -11,58 +11,36 @@ library(leaflet)
 
 # import original data 
 
-# laptop path
-gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
+# for laptop computer path
+#gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
+# write.csv(gunViolence_orig, "final_df.csv", row.names = FALSE)
 
-# desktop path(s)
-#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-#gunViolence = read.csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018_COPY.csv")
+# for desktop computer path
+gunViolence = read.csv("C:/Users/NSETO/Documents/472_shiny/final_df.csv")
 
-# remove NA entries & variables that are not needed to make the map
-# gunViolence = na.omit(gunViolence)
-gunViolence = subset(gunViolence, select = -c(notes, 
-                                              address, 
-                                              incident_url, 
-                                              source_url, 
-                                              incident_url_fields_missing, 
-                                              congressional_district, 
-                                              gun_stolen, 
-                                              participant_name, 
-                                              participant_relationship, 
-                                              participant_status, 
-                                              participant_type,
-                                              sources, 
-                                              state_house_district, 
-                                              state_senate_district, 
-                                              incident_characteristics, 
-                                              location_description, 
-                                              incident_id))
 
 #-----                        -----#
 #reading in original file
 #orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-orig_df <- read_csv("C:/Users/natha/OneDrive/Desktop/472_shiny/gun_violence_data.csv")
+orig_df = gunViolence_cleaned
 
 
-str_to_date <- function(str_date){
-  return(str_date |>
-           as.Date("%m/%d/%Y"))
-}
+# str_to_date <- function(str_date){
+#  return(str_date |>
+#          as.Date("%m/%d/%Y"))
+#}
 
-if(is.Date(orig_df$date) == F){
-  orig$df <- sapply(orig_df$date, str_to_date)
-}
+#if(is.Date(orig_df$date) == F){
+#  orig$df <- sapply(orig_df$date, str_to_date)
+#}
 
 
-date_decomp <- tibble(year = year(orig_df$date),
-                      incident_month = month(orig_df$date, label = TRUE),
-                      incident_day = day(orig_df$date),
-                      incident_wday = wday(orig_df$date, label = TRUE))
-orig_df |>
-  add_column(date_decomp, .after = "date") -> final_df
-
-gunViolence = final_df
-
+#date_decomp <- tibble(year = year(orig_df$date),
+#                      incident_month = month(orig_df$date, label = TRUE),
+#                      incident_day = day(orig_df$date),
+#                      incident_wday = wday(orig_df$date, label = TRUE))
+#orig_df |>
+#  add_column(date_decomp, .after = "date") -> final_df
 #-----                        -----#
 
 # create map using Leaflet package
@@ -99,4 +77,5 @@ map_2015 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, z
   addCircleMarkers(lng = gunViolence_2015$longitude, lat = gunViolence_2015$latitude, 
                    radius = 1, color = "#FFDB58")
 map_2015
+
 
