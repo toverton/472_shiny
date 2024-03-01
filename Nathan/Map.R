@@ -22,7 +22,7 @@ gunViolence = read.csv("C:/Users/NSETO/Documents/472_shiny/final_df.csv")
 #-----                        -----#
 #reading in original file
 #orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-orig_df = gunViolence_cleaned
+orig_df = gunViolence
 
 
 # str_to_date <- function(str_date){
@@ -78,4 +78,28 @@ map_2015 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, z
                    radius = 1, color = "#FFDB58")
 map_2015
 
+table(gunViolence$state)
 
+states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
+class(states)
+names(states)
+
+m <- leaflet(states) %>% 
+  setView(-96, 37.8, 4) %>%
+  addProviderTiles("MapBox", options = providerTileOptions(
+    id = "mapbox.light",
+    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
+m = m %>% addPolygons()
+m
+
+bins <- c(200, 300, 400, 500, 600, 700, 800, Inf)
+pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
+
+m %>% addPolygons(
+  fillColor = ~pal(density),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)
+m
