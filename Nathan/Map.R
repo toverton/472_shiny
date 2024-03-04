@@ -11,6 +11,7 @@ library(leaflet)
 
 # import original data 
 
+<<<<<<< HEAD
 # laptop path
 gunViolence_orig = read_csv("./gun_violence_data.csv")
 
@@ -33,23 +34,37 @@ gunViolence_cleaned = subset(gunViolence, select = -c(notes,
                                               incident_characteristics, 
                                               location_description, 
                                               incident_id))
+=======
+# for laptop computer path
+#gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
+# write.csv(gunViolence_orig, "final_df.csv", row.names = FALSE)
+
+# for desktop computer path
+gunViolence = read.csv("C:/Users/NSETO/Documents/472_shiny/final_df.csv")
+
+>>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
 
 #-----                        -----#
 #reading in original file
 #orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
+<<<<<<< HEAD
 orig_df = gunViolence_cleaned
+=======
+orig_df = gunViolence
+>>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
 
 
-str_to_date <- function(str_date){
-  return(str_date |>
-           as.Date("%m/%d/%Y"))
-}
+# str_to_date <- function(str_date){
+#  return(str_date |>
+#          as.Date("%m/%d/%Y"))
+#}
 
-if(is.Date(orig_df$date) == F){
-  orig$df <- sapply(orig_df$date, str_to_date)
-}
+#if(is.Date(orig_df$date) == F){
+#  orig$df <- sapply(orig_df$date, str_to_date)
+#}
 
 
+<<<<<<< HEAD
 date_decomp <- tibble(year = year(orig_df$date),
                       incident_month = month(orig_df$date, label = TRUE),
                       incident_day = day(orig_df$date),
@@ -59,6 +74,14 @@ orig_df |>
 
 
 
+=======
+#date_decomp <- tibble(year = year(orig_df$date),
+#                      incident_month = month(orig_df$date, label = TRUE),
+#                      incident_day = day(orig_df$date),
+#                      incident_wday = wday(orig_df$date, label = TRUE))
+#orig_df |>
+#  add_column(date_decomp, .after = "date") -> final_df
+>>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
 #-----                        -----#
 
 # create map using Leaflet package
@@ -96,3 +119,28 @@ map_2015 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, z
                    radius = 1, color = "#FFDB58")
 map_2015
 
+table(gunViolence$state)
+
+states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
+class(states)
+names(states)
+
+m <- leaflet(states) %>% 
+  setView(-96, 37.8, 4) %>%
+  addProviderTiles("MapBox", options = providerTileOptions(
+    id = "mapbox.light",
+    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))
+m = m %>% addPolygons()
+m
+
+bins <- c(200, 300, 400, 500, 600, 700, 800, Inf)
+pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
+
+m %>% addPolygons(
+  fillColor = ~pal(density),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)
+m
