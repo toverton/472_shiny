@@ -1,0 +1,149 @@
+---
+title: "load data"
+author: "Alyaqadhan Alfahdi"
+date: "2024-02-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+final_df <- read.csv("final_df.csv") 
+```
+
+```{r}
+library(ggplot2)
+library(usmap)
+library(tidyverse)
+
+state_data <- final_df %>%
+  group_by(state) %>%
+  summarise(n_killed = sum(n_killed))
+
+plot_usmap(data = state_data, values = "n_killed", lines = "black") + 
+  scale_fill_continuous(name = "Number of People Killed", low = "#EDF8E9", high = "#006D2C") + 
+  theme(legend.position = "right") +
+  labs(title = "Number of People Killed by State in the US (2013 - 2018)", caption = "Data: Gun Violence Data")
+
+```
+
+
+
+
+```{r}
+state_data <- final_df %>%
+  group_by(state) %>%
+  summarise(n_injured = sum(n_injured))
+
+plot_usmap(data = state_data, values = "n_injured", lines = "black") + 
+  scale_fill_continuous(name = "Number of People Injured", low = "#EDF8E9", high = "#006D2C") + 
+  theme(legend.position = "right") +
+  labs(title = "Number of People injured by State in the US (2013 - 2018)", caption = "Data: Gun Violence Data")
+```
+
+
+
+
+
+
+```{r}
+
+
+state_data <- final_df %>%
+  group_by(state) %>%
+  summarise(incidents = sum(n_injured) + sum(n_killed))
+
+map <-plot_usmap(data = state_data, values = "incidents", lines = "black") + 
+  scale_fill_continuous(name = "Number of incidents", low = "#EDF8E9", high = "#006D2C") + 
+  theme(legend.position = "right") +
+  labs(title = "Number of incidents by State in the US (2013 - 2018)", caption = "Data: Gun Violence Data")
+
+ggsave('map.png', width = 12, height = 6)
+
+```
+
+
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+df <- df %>%
+  mutate(
+    date = as.Date(date), 
+    day_of_week = wday(date, label = TRUE) 
+  ) %>%
+  group_by(day_of_week) %>%
+  summarise(total_incidents = sum(n_injured) + sum(n_killed)) %>%
+  arrange(day_of_week)
+
+
+```
+
+```{r}
+ggplot(df, aes(x = day_of_week, y = total_incidents, fill = day_of_week)) +
+  geom_col(show.legend = FALSE) + 
+  labs(title = "Total Incidents by Day of the Week",
+       x = "Day of the Week", y = "Total Incidents") +
+  scale_fill_brewer(palette = "Paired") +  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+```
+
+
+
+
+```{r}
+library(lubridate)
+library(dplyr)
+
+df <- final_df %>%
+  mutate(date = ymd(date), 
+         year = year(date),
+         month = floor_date(date, "month")) 
+
+monthly_trends <- df %>%
+  group_by(year, month) %>%
+  summarise( total_killed = sum(n_killed),total_injured = sum(n_injured),
+             total_incidents =total_killed + total_injured )
+#top month for each year
+top_months_each_year <- monthly_trends %>%
+  group_by(year) %>%
+  slice_max(order_by = total_incidents, n = 1) 
+
+#month to "Jan 2020"
+top_months_each_year <- top_months_each_year %>%
+  mutate(month_label = format(month, "%b %Y"),
+         label = paste(month_label, total_incidents, sep=": "))
+
+# Plot
+Seasonal <- ggplot(monthly_trends, aes(x = month, y = total_incidents)) +
+  geom_line(color = "#00AFAF", size = 1) +
+  geom_point(data = top_months_each_year, aes(x = month, y = total_incidents), color = "#00B159", size = 3) +
+  geom_text(data = top_months_each_year, aes(x = month, y = total_incidents, label = label),
+            vjust = -1, color = "#333333", size = 3.5, nudge_y = 50) +
+  labs(title = "Seasonal Trends in Gun Violence Incidents",
+       x = "Month", y = "Total Incidents",caption = "Data: Gun Violence Data",
+       subtitle = "Highlighting the month with the highest number of incidents for each Year") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  expand_limits(y = c(NA, max(monthly_trends$total_incidents) * 1.2))
+
+
+ggsave('Seasonal.png', width = 12, height = 6)
+
+```
+
+
+
+
+#ARIMA model
+
+
+
+
+
