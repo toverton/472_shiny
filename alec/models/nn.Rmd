@@ -1,0 +1,223 @@
+---
+title: "nnt"
+author: "Alyaqadhan Alfahdi"
+date: "2024-03-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+final_df <- read.csv("final_df.csv") 
+```
+
+#Random Forests and Gradient Boosting Machines (GBM)
+#Support Vector Machines (SVM)
+#Long Short-Term Memory (LSTM) Networks
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(keras)
+library(TensorFlow)
+library(forecast)
+```
+
+
+```{r}
+df <- final_df %>%
+  mutate(date = ymd(date),  
+         year = year(date))  
+
+daily_trends <- df %>%
+  group_by(date) %>%
+  summarise(total_killed = sum(n_killed),
+            total_injured = sum(n_injured),
+            total_incidents = total_killed + total_injured) %>%
+  ungroup()  
+
+```
+
+```{r}
+write.csv(daily_trends, file = "daily_trends1.csv")
+```
+
+
+```{r}
+# Splitting 
+training <- daily_trends %>% filter(date < as.Date("2017-03-31"))
+testing <- daily_trends %>% filter(date >= as.Date("2017-03-31"))
+
+
+```
+
+
+```{r}
+last_year_start <- max(df$date) %>% year() %>% {ymd(paste0(. - 1, "-01-01"))}
+```
+
+
+
+
+
+
+```{r}
+data_scaled <- scale(daily_trends$total_incidents)
+
+
+X <- data_scaled[-length(data_scaled)]
+y <- data_scaled[-1]
+
+
+split_index <- which(daily_trends$date < "2017-03-31")
+X_train <- array(X[split_index], dim = c(length(split_index), 1))
+y_train <- y[split_index]
+
+split_index_test <- which(daily_trends$date >= "2017-03-31")
+X_test <- array(X[split_index_test], dim = c(length(split_index_test), 1))
+y_test <- y[split_index_test]
+```
+
+
+
+```{r}
+
+model <- keras_model_sequential() %>%
+  layer_dense(units = 50, activation = 'relu', input_shape = c(1)) %>%
+  layer_dense(units = 1)
+
+
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'mean_squared_error'
+)
+
+
+history <- model %>% fit(
+  X_train, y_train,
+  epochs = 100,
+  batch_size = 12,
+  validation_split = 0.2
+)
+```
+
+
+
+
+```{r}
+predictions <- model %>% predict(X_test)
+
+predictions_rescaled <- predictions * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
+y_test_rescaled <- y_test * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
+
+```
+
+```{r}
+plot(y_test_rescaled, type = 'l', col = 'red')
+lines(predictions_rescaled, col = 'blue')
+```
+
+```{r}
+
+valid_indices <- !is.na(predictions_vector) & !is.na(actual_vector)
+predictions_filtered <- predictions_vector[valid_indices]
+actual_filtered <- actual_vector[valid_indices]
+
+mae <- mean(abs(predictions_filtered - actual_filtered))
+
+rmse <- sqrt(mean((predictions_filtered - actual_filtered)^2))
+
+cat("MAE:", mae, "\nRMSE:", rmse, "\n")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(ggplot2)
+
+testing_df <- data.frame(date = testing$date, total_incidents = y_test_rescaled)
+
+forecast_df <- data.frame(date = testing$date, forecast = predictions_rescaled)
+
+all_actuals_df <- rbind(
+  data.frame(date = training$date, total_incidents = training$total_incidents),
+  testing_df
+)
+
+
+```
+
+
+```{r}
+ggplot() +
+  geom_point(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
+  
+  geom_point(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
+  
+  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
+  
+  geom_point(data = forecast_df, aes(x = date, y = forecast), color = 'blue') +
+  
+  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
+       x = "Date", y = "Total Incidents",
+       caption = "Gray: Actual data for all time\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none") # Hide legend due to explicit caption
+```
+
+
+
+
+
+
+
+```{r}
+library(ggplot2)
+
+ggplot() +
+  # Plot all actual incidents over time as a line for context
+  geom_line(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
+  
+  # Highlight actual incidents in the testing set with a line
+  geom_line(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
+  
+  # Overlay forecasted data for the testing period with a dashed line
+  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
+  
+  # Add titles, labels, and customize the theme
+  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
+       x = "Date", y = "Total Incidents",
+       caption = "Gray: Historical actual data\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none") # Hide legend due to explicit caption
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

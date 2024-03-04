@@ -1,0 +1,184 @@
+---
+title: "arima model"
+author: "Alyaqadhan Alfahdi"
+date: "2024-03-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+final_df <- read.csv("final_df.csv") 
+```
+
+
+
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(tseries)
+```
+
+
+#ARIMA model
+
+```{r}
+df <- final_df %>%
+  mutate(date = ymd(date),  # Ensure 'date' is in Date format
+         year = year(date))  # Extract the year for potential use or filtering
+
+daily_trends <- df %>%
+  group_by(date) %>%
+  summarise(total_killed = sum(n_killed),
+            total_injured = sum(n_injured),
+            total_incidents = total_killed + total_injured) %>%
+  ungroup()  # Ensure the data is no longer grouped for further analysis or plotting
+
+```
+
+
+
+```{r}
+df <- monthly_trends %>%
+  filter(year != 2013)
+```
+
+
+```{r}
+# Splitting 
+training <- daily_trends %>% filter(date < as.Date("2017-03-31"))
+testing <- daily_trends %>% filter(date >= as.Date("2017-03-31"))
+
+
+```
+
+
+
+
+
+
+```{r}
+# Checking for stationarity
+adf.test(training$total_incidents)
+
+
+```
+
+
+
+
+
+
+```{r}
+library(forecast)
+
+# Since we've manually differenced the series twice, we can use the original series with d=2 in auto.arima
+auto_model <- auto.arima(training$total_incidents)
+
+# Check the model summary
+summary(auto_model)
+```
+
+```{r}
+et = residuals(auto_model)
+
+acf(et)
+plot.ts(et)
+gghistogram(et)
+```
+
+
+
+
+
+
+```{r}
+# Forecasting
+h <- nrow(testing)  # The horizon for forecasting
+forecast <- forecast(auto_model, h=h)
+
+# Plotting the forecast
+plot(forecast)
+lines(testing$date, testing$total_incidents, col = 'red', type = 'o')
+```
+
+
+
+
+```{r}
+accuracy(forecast, testing$total_incidents)
+```
+
+
+
+
+
+```{r}
+library(ggplot2)
+library(forecast)
+
+# Correctly identify the last date in the training set
+last_training_date <- max(training$date, na.rm = TRUE)
+
+# Generate a sequence of dates for the forecast
+# Adjust 'by = "day"' if your forecasts are daily
+forecast_dates <- seq(from = last_training_date + 1, by = "day", length.out = length(forecast$mean))
+
+# Create forecast_df using the correct dates
+forecast_df <- data.frame(date = forecast_dates, forecast = forecast$mean)
+
+# Ensure testing_df is correctly formatted
+testing_df <- data.frame(date = testing$date, total_incidents = testing$total_incidents)
+
+# Plotting the forecast against actual values
+ggplot() +
+  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
+  geom_point(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
+  labs(title = "Forecast vs Actual Total Incidents",
+       x = "Date", y = "Total Incidents") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+
+
+```{r}
+library(ggplot2)
+
+# Assuming 'forecast_df' contains your forecast data with 'date' and 'forecast' columns
+# And 'testing_df' contains actual data for the test period with 'date' and 'total_incidents' columns
+
+# Combine actual data from training and testing for plotting
+all_actuals_df <- rbind(
+  training %>% select(date, total_incidents),
+  testing_df %>% select(date, total_incidents)
+)
+
+# Plot
+ggplot() +
+  # Plot all actual incidents
+  geom_point(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
+  # Plot actual incidents in testing set
+  geom_point(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
+  # Plot forecast line
+  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
+  # Optionally, add forecast points
+  geom_point(data = forecast_df, aes(x = date, y = forecast), color = 'blue') +
+  labs(title = "Actual vs. Forecast Total Incidents",
+       x = "Date", y = "Total Incidents") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle=45, hjust=1), legend.position="bottom")
+
+
+```
+
+
