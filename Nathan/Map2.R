@@ -30,6 +30,7 @@ map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.
 map_highCasuality
 
 
+
 # Mapping all incidents where there were no reported deaths
 noDeaths = filter(gunViolence, gunViolence$n_killed == 0)
 map_noDeaths = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
@@ -78,11 +79,5 @@ m = leaflet(gunViolence) %>%
 
 # Display the map
 m
-
-
-xyz = m %>% addAwesomeMarkers(lng = gunViolence_capitalCities$longitude, lat = gunViolence_capitalCities$latitude, 
-                            icon = awesomeIcons(icon = 'star', markerColor = 'black'), 
-                            label = gunViolence_capitalCities$city_or_county)
-xyz
 
 
