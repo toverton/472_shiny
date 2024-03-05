@@ -64,7 +64,7 @@ gunViolence = gunViolence %>%
 
 
 # Create Leaflet map
-m = leaflet(gunViolence) %>%
+heatmap = leaflet(gunViolence) %>%
   addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addHeatmap(
     lng = ~longitude,   # Longitude column
@@ -78,6 +78,12 @@ m = leaflet(gunViolence) %>%
   addScaleBar(position = "bottomright") # Add scale bar
 
 # Display the map
-m
+heatmap
 
 
+heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
+                       lng = gunViolence_capitalCities$longitude, 
+                       lat = gunViolence_capitalCities$latitude, 
+                       label = gunViolence_capitalCities$city_or_county)
+
+heatmap_capitals
