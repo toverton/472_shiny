@@ -30,8 +30,8 @@ map_highCasuality
 
 
 # Mapping all incidents where there were no reported deaths
-noDeaths = filter(gunViolence, n_killed == 0)
+noDeaths = filter(gunViolence, gunViolence$n_killed == 0)
 map_noDeaths = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
-  addCircleMarkers(lng = noDeaths$longitude, lat = noDeaths$latitude)
+  addCircleMarkers(lng = noDeaths$longitude, lat = noDeaths$latitude, radius = 1)
 map_noDeaths
 
