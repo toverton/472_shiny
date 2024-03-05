@@ -6,9 +6,10 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(ggplot2)
-library(forcats)
 library(leaflet)
 library(earth)
+library(viridis)
+library(leaflet.extras)
 
 # Read in dataset
 gunViolence = read.csv("final_df.csv")
@@ -40,22 +41,30 @@ map_noDeaths
 #---                                                                                    ---#
 
 
-# Load necessary libraries
-library(leaflet)
-library(dplyr)
-library(viridis)
-library(leaflet.extras)
+# List of state capitals
+state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
+                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
+                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
+                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
+                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
+                    "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
+                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
+                    "Topeka", "Trenton")
 
-# Assuming 'gunViolence' is a dataset with latitude, longitude, and n_killed columns
+# Filter out state capitals
+gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
+
+
+
 
 # Filter out NA values in longitude and latitude
-gunViolence <- gunViolence %>% 
+gunViolence = gunViolence %>% 
   filter(!is.na(longitude) & !is.na(latitude))
 
+
 # Create Leaflet map
-m <- leaflet(gunViolence) %>%
-  addTiles() %>% 
-  setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+m = leaflet(gunViolence) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addHeatmap(
     lng = ~longitude,   # Longitude column
     lat = ~latitude,   # Latitude column
@@ -63,7 +72,7 @@ m <- leaflet(gunViolence) %>%
     blur = 20,     # Blur radius
     max = max(gunViolence$n_killed, na.rm = TRUE),       # Maximum intensity
     radius = 15,   # Radius of each point
-    gradient = viridisLite::viridis(20)  # Color gradient
+    gradient = c("blue", "yellow", "red")  # Color gradient
   ) %>%
   addScaleBar(position = "bottomright") # Add scale bar
 
@@ -71,9 +80,9 @@ m <- leaflet(gunViolence) %>%
 m
 
 
-
-
-
-
+xyz = m %>% addAwesomeMarkers(lng = gunViolence_capitalCities$longitude, lat = gunViolence_capitalCities$latitude, 
+                            icon = awesomeIcons(icon = 'star', markerColor = 'black'), 
+                            label = gunViolence_capitalCities$city_or_county)
+xyz
 
 
