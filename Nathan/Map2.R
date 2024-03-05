@@ -80,10 +80,10 @@ heatmap = leaflet(gunViolence) %>%
 # Display the map
 heatmap
 
+heatmap = heatmap %>% addProviderTiles("Esri.WorldStreetMap")
 
-heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
-                       lng = gunViolence_capitalCities$longitude, 
-                       lat = gunViolence_capitalCities$latitude, 
-                       label = gunViolence_capitalCities$city_or_county)
-
-heatmap_capitals
+#heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
+#                       lng = gunViolence_capitalCities$longitude, 
+#                       lat = gunViolence_capitalCities$latitude, 
+#                       label = gunViolence_capitalCities$city_or_county)
+#heatmap_capitals
