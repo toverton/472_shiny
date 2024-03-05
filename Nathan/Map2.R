@@ -41,23 +41,6 @@ map_noDeaths
 
 #---                                                                                    ---#
 
-
-# List of state capitals
-state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
-                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
-                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
-                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
-                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
-                    "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
-                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
-                    "Topeka", "Trenton")
-
-# Filter out state capitals
-gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
-
-
-
-
 # Filter out NA values in longitude and latitude
 gunViolence = gunViolence %>% 
   filter(!is.na(longitude) & !is.na(latitude))
@@ -74,16 +57,19 @@ heatmap = leaflet(gunViolence) %>%
     blur = 20,     
     max = max(gunViolence$n_killed, na.rm = TRUE),       
     radius = 20,   
-    gradient = c("blue", "yellow", "red")  
+    gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "bottomright") # Add scale bar
 
+
+# Define legend HTML content with gradient including green
 legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
-                  <h4>Key</h4>
-                  <div><span style="background-color: blue; width: 20px; height: 20px; display: inline-block;"></span> Low Amount of Incidents</div>
-                  <div><span style="background-color: yellow; width: 20px; height: 20px; display: inline-block;"></span> Medium Amount of Incidents</div>
-                  <div><span style="background-color: red; width: 20px; height: 20px; display: inline-block;"></span> High Amount of Incidents</div>
+                  <h4 style="color: black;">Amount of Incidents</h4>
+                  <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
+                  <div>Low  Medium  High</div>
               </div>'
+
+
 
 # Add legend to the map
 heatmap <- heatmap %>%
@@ -93,10 +79,23 @@ heatmap <- heatmap %>%
 heatmap
 
 
+# List of state capitals
+#state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
+#                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
+#                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
+#                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
+#                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
+#                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
+#                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
+#                    "Topeka", "Trenton")
+#
+# Filter out state capitals
+#gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
+#
 #heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
-#                       lng = gunViolence_capitalCities$longitude, 
-#                       lat = gunViolence_capitalCities$latitude, 
-#                       label = gunViolence_capitalCities$city_or_county)
+ #                      lng = gunViolence_capitalCities$longitude, 
+ #                      lat = gunViolence_capitalCities$latitude, 
+ #                      label = gunViolence_capitalCities$city_or_county)
 #heatmap_capitals
 
 
