@@ -8,81 +8,13 @@ library(readxl)
 library(ggplot2)
 library(forcats)
 library(leaflet)
+library(earth)
 
-# import original data 
+# Read in dataset
 
-<<<<<<< HEAD
-# laptop path
-gunViolence_orig = read_csv("./gun_violence_data.csv")
-
-# remove NA entries & variables that are not needed to make the map
-# gunViolence = na.omit(gunViolence)
-gunViolence_cleaned = subset(gunViolence, select = -c(notes, 
-                                              address, 
-                                              incident_url, 
-                                              source_url, 
-                                              incident_url_fields_missing, 
-                                              congressional_district, 
-                                              gun_stolen, 
-                                              participant_name, 
-                                              participant_relationship, 
-                                              participant_status, 
-                                              participant_type,
-                                              sources, 
-                                              state_house_district, 
-                                              state_senate_district, 
-                                              incident_characteristics, 
-                                              location_description, 
-                                              incident_id))
-=======
-# for laptop computer path
-#gunViolence = read.csv("C:/Users/natha/OneDrive/Desktop/School/gun-violence-data_01-2013_03-2018.csv")
-# write.csv(gunViolence_orig, "final_df.csv", row.names = FALSE)
-
-# for desktop computer path
-gunViolence = read.csv("C:/Users/NSETO/Documents/472_shiny/final_df.csv")
-
->>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
-
-#-----                        -----#
-#reading in original file
-#orig_df <- read_csv("C:/Users/NSETO/Documents/RStudio Documents/gun-violence-data_01-2013_03-2018.csv")
-<<<<<<< HEAD
-orig_df = gunViolence_cleaned
-=======
-orig_df = gunViolence
->>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
+gunViolence = read.csv("final_df.csv")
 
 
-# str_to_date <- function(str_date){
-#  return(str_date |>
-#          as.Date("%m/%d/%Y"))
-#}
-
-#if(is.Date(orig_df$date) == F){
-#  orig$df <- sapply(orig_df$date, str_to_date)
-#}
-
-
-<<<<<<< HEAD
-date_decomp <- tibble(year = year(orig_df$date),
-                      incident_month = month(orig_df$date, label = TRUE),
-                      incident_day = day(orig_df$date),
-                      incident_wday = wday(orig_df$date, label = TRUE))
-orig_df |>
-  add_column(date_decomp, .after = "date") -> final_df
-
-
-
-=======
-#date_decomp <- tibble(year = year(orig_df$date),
-#                      incident_month = month(orig_df$date, label = TRUE),
-#                      incident_day = day(orig_df$date),
-#                      incident_wday = wday(orig_df$date, label = TRUE))
-#orig_df |>
-#  add_column(date_decomp, .after = "date") -> final_df
->>>>>>> 0e5d5d223eb0dce4658ebec15084575380080395
-#-----                        -----#
 
 # create map using Leaflet package
 originalMap = leaflet() %>% 
@@ -96,32 +28,70 @@ originalMap = leaflet() %>%
 originalMap
 
 
-# starting to filter
+# Maps with Filtered Data
 
 # 2013 map data
 gunViolence_2013 = filter(gunViolence, year == "2013")
 map_2013 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
   addCircleMarkers(lng = gunViolence_2013$longitude, lat = gunViolence_2013$latitude, 
-                   radius = 1, color = "maroon")
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "maroon", fillOpacity = 1)
 map_2013
+
 
 # 2014 map data
 gunViolence_2014 = filter(gunViolence, year == "2014")
 map_2014 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
   addCircleMarkers(lng = gunViolence_2014$longitude, lat = gunViolence_2014$latitude, 
-                   radius = 1, color = "orange")
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "orange", fillOpacity = 1)
 map_2014
+
 
 # 2015 map data
 gunViolence_2015 = filter(gunViolence, year == "2015")
 map_2015 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
   addCircleMarkers(lng = gunViolence_2015$longitude, lat = gunViolence_2015$latitude, 
-                   radius = 1, color = "#FFDB58")
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "#FFDB58", fillOpacity = 1)
 map_2015
 
+
+# 2016 map data
+gunViolence_2016 = filter(gunViolence, year == "2016")
+map_2016 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2016$longitude, lat = gunViolence_2016$latitude, 
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "green", fillOpacity = 1)
+map_2016
+
+
+# 2017 map data
+gunViolence_2017 = filter(gunViolence, year == "2017")
+map_2017 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2017$longitude, lat = gunViolence_2017$latitude, 
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "blue", fillOpacity = 1)
+map_2017
+ 
+
+# 2018 map data
+gunViolence_2018 = filter(gunViolence, year == "2018" & -175 <= longitude & longitude <= -45)
+map_2018 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addCircleMarkers(lng = gunViolence_2018$longitude, lat = gunViolence_2018$latitude, 
+                   radius = 3, color = "black", stroke = TRUE, weight = .5, 
+                   fill = TRUE, fillColor = "purple", fillOpacity = gunViolence_2018$n_killed)
+map_2018
+
+
+
+
+
+#----                                                                       ----#
+# From internet:  
 table(gunViolence$state)
 
-states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
+states <- geojsonio::geojson_read("final_df", what = "sp")
 class(states)
 names(states)
 
@@ -144,3 +114,5 @@ m %>% addPolygons(
   dashArray = "3",
   fillOpacity = 0.7)
 m
+
+#----                                                                       ----#
