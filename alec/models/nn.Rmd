@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-final_df <- read.csv("final_df.csv") 
+final_df <- read.csv("C:/Users/alyaq/Desktop/spring2024/stat472/472_shiny/alec/final_df.csv") 
 ```
 
 #Random Forests and Gradient Boosting Machines (GBM)
@@ -22,7 +22,6 @@ final_df <- read.csv("final_df.csv")
 library(tidyverse)
 library(lubridate)
 library(keras)
-library(TensorFlow)
 library(forecast)
 ```
 
@@ -41,10 +40,6 @@ daily_trends <- df %>%
 
 ```
 
-```{r}
-write.csv(daily_trends, file = "daily_trends1.csv")
-```
-
 
 ```{r}
 # Splitting 
@@ -53,13 +48,6 @@ testing <- daily_trends %>% filter(date >= as.Date("2017-03-31"))
 
 
 ```
-
-
-```{r}
-last_year_start <- max(df$date) %>% year() %>% {ymd(paste0(. - 1, "-01-01"))}
-```
-
-
 
 
 
