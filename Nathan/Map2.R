@@ -64,7 +64,7 @@ heatmap = leaflet(gunViolence) %>%
 
 # Define legend HTML content with gradient including green
 legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
-                  <h4 style="color: black;">Amount of Incidents</h4>
+                  <h4 style="color: black;">Amount of People Killed</h4>
                   <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
                   <div>Low  Medium  High</div>
               </div>'
