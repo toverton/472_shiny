@@ -65,25 +65,42 @@ gunViolence = gunViolence %>%
 
 # Create Leaflet map
 heatmap = leaflet(gunViolence) %>%
-  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
   addHeatmap(
-    lng = ~longitude,   # Longitude column
-    lat = ~latitude,   # Latitude column
-    intensity = ~n_killed,  # Use n_killed column as intensity
-    blur = 20,     # Blur radius
-    max = max(gunViolence$n_killed, na.rm = TRUE),       # Maximum intensity
-    radius = 15,   # Radius of each point
-    gradient = c("blue", "yellow", "red")  # Color gradient
+    lng = ~longitude,   
+    lat = ~latitude,   
+    intensity = ~n_killed,  
+    blur = 20,     
+    max = max(gunViolence$n_killed, na.rm = TRUE),       
+    radius = 20,   
+    gradient = c("blue", "yellow", "red")  
   ) %>%
   addScaleBar(position = "bottomright") # Add scale bar
+
+legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
+                  <h4>Key</h4>
+                  <div><span style="background-color: blue; width: 20px; height: 20px; display: inline-block;"></span> Low Amount of Incidents</div>
+                  <div><span style="background-color: yellow; width: 20px; height: 20px; display: inline-block;"></span> Medium Amount of Incidents</div>
+                  <div><span style="background-color: red; width: 20px; height: 20px; display: inline-block;"></span> High Amount of Incidents</div>
+              </div>'
+
+# Add legend to the map
+heatmap <- heatmap %>%
+  addControl(html = legend_html, position = "bottomleft")
 
 # Display the map
 heatmap
 
-heatmap = heatmap %>% addProviderTiles(providers$Esri.NatGeoWorldMap)
 
 #heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
 #                       lng = gunViolence_capitalCities$longitude, 
 #                       lat = gunViolence_capitalCities$latitude, 
 #                       label = gunViolence_capitalCities$city_or_county)
 #heatmap_capitals
+
+
+
+
+
+
