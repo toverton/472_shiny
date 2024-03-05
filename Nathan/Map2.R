@@ -35,3 +35,45 @@ map_noDeaths = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283,
   addCircleMarkers(lng = noDeaths$longitude, lat = noDeaths$latitude, radius = 1)
 map_noDeaths
 
+
+
+#---                                                                                    ---#
+
+
+# Load necessary libraries
+library(leaflet)
+library(dplyr)
+library(viridis)
+library(leaflet.extras)
+
+# Assuming 'gunViolence' is a dataset with latitude, longitude, and n_killed columns
+
+# Filter out NA values in longitude and latitude
+gunViolence <- gunViolence %>% 
+  filter(!is.na(longitude) & !is.na(latitude))
+
+# Create Leaflet map
+m <- leaflet(gunViolence) %>%
+  addTiles() %>% 
+  setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addHeatmap(
+    lng = ~longitude,   # Longitude column
+    lat = ~latitude,   # Latitude column
+    intensity = ~n_killed,  # Use n_killed column as intensity
+    blur = 20,     # Blur radius
+    max = max(gunViolence$n_killed, na.rm = TRUE),       # Maximum intensity
+    radius = 15,   # Radius of each point
+    gradient = viridisLite::viridis(20)  # Color gradient
+  ) %>%
+  addScaleBar(position = "bottomright") # Add scale bar
+
+# Display the map
+m
+
+
+
+
+
+
+
+
