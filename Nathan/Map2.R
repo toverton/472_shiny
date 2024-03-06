@@ -58,11 +58,11 @@ heatmap = leaflet(gunViolence) %>%
     radius = 20,   
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
-  addScaleBar(position = "bottomright") # Add scale bar
+  addScaleBar(position = "topright") 
 
 
 # Define legend HTML content with gradient including green
-legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
+legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
                   <h4 style="color: black;">Amount of People Killed</h4>
                   <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
                   <div>Low  Medium  High</div>
@@ -80,6 +80,59 @@ heatmap = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude,
 
 # Display the map
 heatmap
+
+
+LVshooting = paste(sep = "<br/>",
+                   "Las Vegas Shooting",
+                   "1 October 2017",
+                   "Las Vegas, NV 89119")
+
+Roseburg = paste(sep = "<br/>",
+                   "Umpqua Community College Shooting",
+                   "1 October 2015",
+                   "Roseburg, OR 97470")
+
+NavyYard = paste(sep = "<br/>",
+                 "Washington Navy Yard Shooting",
+                 "16 September 2013",
+                 "Washington, DC 20376")
+
+SanBernadinoAttack = paste(sep = "<br/>",
+                 "San Bernardino Attack",
+                 "2 December 2015",
+                 "San Bernardino, CA 92408")
+
+Sutherland = paste(sep = "<br/>",
+                  "Sutherland Springs Church Shooting",
+                  "5 November 2017",
+                  "Sutherland Springs, TX 78161")
+
+Pulse = paste(sep = "<br/>",
+                   "Pulse Nightclub Shooting",
+                   "12 June 2016",
+                   "Orlando, FL 32806")
+
+Parkland = paste(sep = "<br/>",
+              "Marjory Stoneman Douglas High School Shooting",
+              "14 February 2018",
+              "Parkland, FL 33076")
+
+heatmapTest = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950, 
+                                    LVshooting, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -123.2800, lat = 43.2628, 
+                                              Roseburg, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -76.9977, lat = 38.8730, 
+                                              NavyYard, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -117.2770, lat = 34.0758, 
+                                              SanBernadinoAttack, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -98.0564, lat = 29.2733, 
+                                              Sutherland, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -81.3767, lat = 28.5195, 
+                                              Pulse, options = popupOptions(closeButton = TRUE)) %>% 
+                                    addPopups(lng = -80.2694, lat = 26.3045, 
+                                              Parkland, options = popupOptions(closeButton = TRUE))
+heatmapTest
+
 
 # Attempt to make markers for state capitals
 # List of state capitals
