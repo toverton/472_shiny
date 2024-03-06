@@ -2,7 +2,6 @@ library(tidyverse)
 library(readxl)
 library(reshape2)
 library(ggplot2)
-#library(latlong2)
 
 #reading in original file
 orig_df <- read_csv("./gun_violence_data.csv")
