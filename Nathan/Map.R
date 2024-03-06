@@ -80,7 +80,7 @@ gunViolence_2018 = filter(gunViolence, year == "2018" & -175 <= longitude & long
 map_2018 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>% 
   addCircleMarkers(lng = gunViolence_2018$longitude, lat = gunViolence_2018$latitude, 
                    radius = 3, color = "black", stroke = TRUE, weight = .5, 
-                   fill = TRUE, fillColor = "purple", fillOpacity = gunViolence_2018$n_killed)
+                   fill = TRUE, fillColor = "purple", fillOpacity = 1)
 map_2018
 
 
