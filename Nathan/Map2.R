@@ -26,9 +26,8 @@ map_ShootingMass
 # Mapping all incidents where deaths were greater than or equal to ten
 highCasuality = filter(gunViolence, n_killed >= 10)
 map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
-  addAwesomeMarkers(lng = massShooting$longitude, lat = massShooting$latitude, label = massShooting$n_killed)
+  addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
 map_highCasuality
-
 
 
 # Mapping all incidents where there were no reported deaths
@@ -78,19 +77,19 @@ heatmap <- heatmap %>%
 # Display the map
 heatmap
 
-
+# Attempt to make markers for state capitals
 # List of state capitals
-#state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
-#                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
-#                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
-#                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
-#                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
-#                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
-#                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
-#                    "Topeka", "Trenton")
-#
+state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
+                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
+                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
+                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
+                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
+                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
+                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
+                    "Topeka", "Trenton")
+
 # Filter out state capitals
-#gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
+gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
 #
 #heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
  #                      lng = gunViolence_capitalCities$longitude, 
@@ -98,6 +97,9 @@ heatmap
  #                      label = gunViolence_capitalCities$city_or_county)
 #heatmap_capitals
 
+
+heatmapTest = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
+heatmapTest
 
 
 
