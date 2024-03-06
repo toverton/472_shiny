@@ -71,9 +71,9 @@ legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding:
 
 
 # Add legend to the map
-heatmap = heatmap %>%
-  addControl(html = legend_html, position = "bottomleft")
+heatmap = heatmap %>% addControl(html = legend_html, position = "bottomleft")
 
+# Adding labels marking incidents with deaths ≥ 10
 heatmap = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude, 
                                         lat = highCasuality$latitude, 
                                         label = highCasuality$n_killed)
@@ -96,9 +96,9 @@ state_capitals <- c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Bato
 gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
 #
 #heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
- #                      lng = gunViolence_capitalCities$longitude, 
- #                      lat = gunViolence_capitalCities$latitude, 
- #                      label = gunViolence_capitalCities$city_or_county)
+#                       lng = gunViolence_capitalCities$longitude, 
+#                       lat = gunViolence_capitalCities$latitude, 
+#                       label = gunViolence_capitalCities$city_or_county)
 #heatmap_capitals
 
 
