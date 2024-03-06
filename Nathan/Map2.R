@@ -71,8 +71,12 @@ legend_html <- '<div style="background-color: rgba(255, 255, 255, 0.7); padding:
 
 
 # Add legend to the map
-heatmap <- heatmap %>%
+heatmap = heatmap %>%
   addControl(html = legend_html, position = "bottomleft")
+
+heatmap = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude, 
+                                        lat = highCasuality$latitude, 
+                                        label = highCasuality$n_killed)
 
 # Display the map
 heatmap
@@ -98,8 +102,11 @@ gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_ca
 #heatmap_capitals
 
 
-heatmapTest = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
-heatmapTest
+
+
+
+
+
 
 
 
