@@ -17,6 +17,16 @@ if(is.Date(orig_df$date) == F){
 }
 #-----                            -----#
 
+Pos_to_Neg_Long <- function(long_val){
+  if(isTRUE(long_val > 0) == TRUE) {
+    return(-long_val)
+  } else {
+    return(long_val)
+  }
+}
+
+orig_df$longitude <- sapply(orig_df$longitude, Pos_to_Neg_Long)
+
 #removing variables 
 orig_df |> 
   select(-notes, 
