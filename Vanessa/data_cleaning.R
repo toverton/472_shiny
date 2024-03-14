@@ -105,11 +105,3 @@ final_df <- final_df |>
 #adding number killed per 100,000
 final_df |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
-
-#making a df to convert long/lat to counties
-#can't get it to work, also lots of NAs
-
-# lat_long_df <- tibble(longitude = as.numeric(lean_df$longitude), 
-#                       latitude = as.numeric(lean_df$latitude), 
-#                       incident_id = lean_df$incident_id) |>
-#   drop_na()
