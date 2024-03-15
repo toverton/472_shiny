@@ -105,3 +105,6 @@ final_df <- final_df |>
 #adding number killed per 100,000
 final_df |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
+
+rm(date_decomp, lean_df, orig_df, yearly_pop, yearly_pop_final, yearly_pop_melt, 
+   Pos_to_Neg_Long, remove_state_periods)

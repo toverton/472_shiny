@@ -34,24 +34,7 @@ f_df_abb |>
        title = "2013 - 2018 Fatalities per 100,000 by State or District") + 
   scale_fill_gradient(low = "dodgerblue2", high = "firebrick1") + 
   coord_flip()
-ggsave("per_cap_plot.png", width = 15, height = 8)
-
-final_df |>
-  group_by(incident_month) |>
-  summarize(total = sum(n_killed)) |>
-  ggplot(aes(x = incident_month, y = total)) + 
-  geom_point() +
-  theme_bw() + 
-  theme(panel.border = element_blank(), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust=1),
-        plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Month", 
-       y = "Total Fatalities", 
-       title = "2013 - 2018 Total Fatalties by Month") + 
-  stat_summary(fun.y = mean, geom = "line", aes(group = 1), linetype = "dashed")
+#ggsave("per_cap_plot.png", width = 15, height = 8)
 
 final_df |>
   filter(year == 2017) |>

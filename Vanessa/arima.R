@@ -2,6 +2,7 @@ library(tseries)
 library(forecast)
 library(xts)
 library(fpp)
+library(astsa)
 
 ##                                                        ##
 ##---- Remember to load final_df from data_cleaning.R ----##
@@ -22,38 +23,15 @@ final_df |>
 
 training_df_ts <- xts(training_df$total_killed, training_df$date) 
 test_df_ts <- xts(test_df$total_killed, test_df$date) 
+rm(training_df, test_df)
 
-#Testing for stationarity
-adf.test(training_df_ts)
+#differencing training and test sets 
+diff(training_df_ts, lag = 7, differences = 1) |> 
+  na.omit() -> train_df_ts_lagged 
+diff(test_df_ts, lag = 7, differences = 1) |> 
+  na.omit() -> test_df_ts_lagged 
 
-#ACF and PACF plots
-auto_corr <- acf(training_df_ts, plot = F)
-auto_corr_df <- with(auto_corr, data.frame(lag, acf))
+acf(train_df_ts_lagged)
+pacf(train_df_ts_lagged)
 
-N <- length(training_df_ts)
-ciz = -qnorm((1-0.95)/2)/sqrt(N-3)
-cir = (exp(2*ciz) - 1) / (exp(2*ciz) + 1)  
-
-auto_corr_df |>
-  ggplot(mapping = aes(x = lag, y = acf)) +
-  geom_hline(aes(yintercept = 0)) +
-  geom_segment(mapping = aes(xend = lag, yend = 0)) +
-  geom_hline(aes(yintercept = cir), linetype = 2, color = 'firebrick1') +
-  geom_hline(aes(yintercept = -cir), linetype = 2, color = 'firebrick1') +
-  theme_bw() + 
-  theme(panel.border = element_blank(), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Lag", 
-       y = "Autocorrelation", 
-       title = "Autocorrelation of Total Fatalities Training Series")
-
-par_auto_corr <- pacf(training_df_ts, plot = F)
-plot(par_auto_corr, main = "Total Fatalities Series Partial Autocorrelation")
-
-
-
-
-
+sarima_fit <- sarima(training_df_ts, p = 2, d = 0, q = 2, P = 4, D = 1, Q = 1, S = 7)
