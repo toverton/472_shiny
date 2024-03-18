@@ -54,14 +54,23 @@ gunViolence |>
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
 #----                                                             ----#
  
+
 highCasuality = filter(gunViolence, n_killed >= 10)
 map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
 map_highCasuality                                                                            ---#
 
+  
 # Filter out NA values in longitude and latitude
 gunViolence = gunViolence %>% 
   filter(!is.na(longitude) & !is.na(latitude))
+
+# Define legend HTML content with gradient
+legend_html = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
+                  <h4 style="color: black;">Amount of People Killed</h4>
+                  <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
+                  <div>Low  Medium  High</div>
+              </div>'
 
 # Create Leaflet map
 heatmap = leaflet(gunViolence) %>%
@@ -76,22 +85,11 @@ heatmap = leaflet(gunViolence) %>%
     radius = 20,   
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
-  addScaleBar(position = "topright") 
-
-# Define legend HTML content with gradient
-legend_html = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
-                  <h4 style="color: black;">Amount of People Killed</h4>
-                  <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
-                  <div>Low  Medium  High</div>
-              </div>'
-
-# Add legend to the map
-heatmap = heatmap %>% addControl(html = legend_html, position = "bottomleft")
-
-# Adding labels marking incidents with deaths ≥ 10
-heatmap = heatmap %>% addAwesomeMarkers(lng = highCasuality$longitude, 
-                                        lat = highCasuality$latitude, 
-                                        label = highCasuality$n_killed)
+  addScaleBar(position = "topright") %>% 
+  addControl(html = legend_html, position = "bottomleft") %>%
+  addAwesomeMarkers(lng = highCasuality$longitude, 
+                    lat = highCasuality$latitude, 
+                    label = highCasuality$n_killed)
 
 # Display the map
 heatmap
@@ -179,14 +177,7 @@ state_capitals = c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton
                     "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
                     "Topeka", "Trenton")
 
-# Filter out state capitals
-gunViolence_capitalCities = gunViolence[gunViolence$city_or_county %in% state_capitals,]
-#
-#heatmap_capitals = heatmap %>% addMarkers(data = gunViolence_capitalCities, 
-#                       lng = gunViolence_capitalCities$longitude, 
-#                       lat = gunViolence_capitalCities$latitude, 
-#                       label = gunViolence_capitalCities$city_or_county)
-#heatmap_capitals
+
 
 
 
