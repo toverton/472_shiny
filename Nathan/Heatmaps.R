@@ -150,7 +150,7 @@ Parkland = paste(sep = "<br/>",
               "14 February 2018",
               "Parkland, FL 33076")
 
-heatmapTest = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950, 
+heatmap_markers = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950, 
                                     LVshooting, options = popupOptions(closeButton = TRUE)) %>% 
                                     addPopups(lng = -123.2800, lat = 43.2628, 
                                               Roseburg, options = popupOptions(closeButton = TRUE)) %>% 
@@ -164,7 +164,8 @@ heatmapTest = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
                                               Pulse, options = popupOptions(closeButton = TRUE)) %>% 
                                     addPopups(lng = -80.2694, lat = 26.3045, 
                                               Parkland, options = popupOptions(closeButton = TRUE))
-heatmapTest
+heatmap_markers
+
 
 
 # Attempt to make markers for state capitals
