@@ -95,10 +95,10 @@ heatmap = leaflet(gunViolence) %>%
 heatmap
 
 
-legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 150px; text-align: center;">
+legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 3px; border-radius: 5px; border: 1px solid black; width: 150px; text-align: center;">
                   <h4 style="color: black;">People Killed per 100,000</h4>
-                  <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
-                  <div> Low   Medium   High </div>
+                  <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 25px; border-radius: 5px;"></div>
+                  <div> Low ------> High </div>
               </div>'
 
 heatmap_perCapita = leaflet(gunViolence) %>%
@@ -123,7 +123,7 @@ LVshooting = paste(sep = "<br/>",
                    "Las Vegas Shooting",
                    "1 October 2017",
                    "Las Vegas, NV 89119")
-Roseburg = paste(sep = "<br/>",
+Umpqua = paste(sep = "<br/>",
                    "Umpqua Community College Shooting",
                    "1 October 2015",
                    "Roseburg, OR 97470")
@@ -151,7 +151,7 @@ Parkland = paste(sep = "<br/>",
 heatmap_markers = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950, 
                                     LVshooting, options = popupOptions(closeButton = TRUE)) %>% 
                                     addPopups(lng = -123.2800, lat = 43.2628, 
-                                              Roseburg, options = popupOptions(closeButton = TRUE)) %>% 
+                                              Umpqua, options = popupOptions(closeButton = TRUE)) %>% 
                                     addPopups(lng = -76.9977, lat = 38.8730, 
                                               NavyYard, options = popupOptions(closeButton = TRUE)) %>% 
                                     addPopups(lng = -117.2770, lat = 34.0758, 
