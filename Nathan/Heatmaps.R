@@ -95,10 +95,10 @@ heatmap = leaflet(gunViolence) %>%
 heatmap
 
 
-legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
+legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 150px; text-align: center;">
                   <h4 style="color: black;">People Killed per 100,000</h4>
                   <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 20px; border-radius: 5px;"></div>
-                  <div>Low  Medium  High</div>
+                  <div> Low   Medium   High </div>
               </div>'
 
 heatmap_perCapita = leaflet(gunViolence) %>%
