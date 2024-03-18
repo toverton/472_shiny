@@ -53,7 +53,11 @@ gunViolence |>
 
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
 #----                                                             ----#
-                                                                             ---#
+ 
+highCasuality = filter(gunViolence, n_killed >= 10)
+map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
+map_highCasuality                                                                            ---#
 
 # Filter out NA values in longitude and latitude
 gunViolence = gunViolence %>% 
