@@ -54,6 +54,16 @@ gunViolence |>
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
 #----                                                             ----#
  
+# List of state capitals
+state_capitals = c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
+                   "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
+                   "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
+                   "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
+                   "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
+                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
+                   "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
+                   "Topeka", "Trenton")
+
 
 highCasuality = filter(gunViolence, n_killed >= 10)
 map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
@@ -166,20 +176,25 @@ heatmap_markers
 
 
 
-# Attempt to make markers for state capitals
-# List of state capitals
-state_capitals = c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
-                    "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
-                    "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
-                    "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
-                    "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
-                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
-                    "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
-                    "Topeka", "Trenton")
+gunViolence_CO = filter(gunViolence, state == "Colorado")
+gunViolence_CO
 
-
-
-
+heatmap_CO = leaflet(gunViolence_CO) %>%
+  addTiles() %>% setView(lng = -105.7821, lat = 38.5501, zoom = 6) %>% 
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,   
+    lat = ~latitude,   
+    intensity = ~n_killed,  
+    blur = 20,     
+    max = max(gunViolence_CO$n_killed, na.rm = TRUE),       
+    radius = 20,   
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>% 
+  addControl(html = legend_html, position = "bottomleft") %>% 
+  addCircleMarkers(lng = gunViolence_CO$longitude, lat = gunViolence_CO$latitude, radius = 1)
+heatmap_CO
 
 
 
