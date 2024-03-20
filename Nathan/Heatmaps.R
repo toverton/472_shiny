@@ -7,7 +7,6 @@ library(lubridate)
 library(readxl)
 library(ggplot2)
 library(leaflet)
-library(earth)
 library(viridis)
 library(leaflet.extras)
 library(reshape2)
@@ -72,8 +71,7 @@ map_highCasuality                                                               
 
   
 # Filter out NA values in longitude and latitude
-gunViolence = gunViolence %>% 
-  filter(!is.na(longitude) & !is.na(latitude))
+gunViolence = gunViolence %>% filter(!is.na(longitude) & !is.na(latitude))
 
 # Define legend HTML content with gradient
 legend_html = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
@@ -177,8 +175,6 @@ heatmap_markers
 
 
 gunViolence_CO = filter(gunViolence, state == "Colorado")
-gunViolence_CO
-
 heatmap_CO = leaflet(gunViolence_CO) %>%
   addTiles() %>% setView(lng = -105.7821, lat = 38.5501, zoom = 6) %>% 
   addProviderTiles(providers$Esri.WorldTopoMap) %>%
@@ -193,7 +189,9 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
   ) %>%
   addScaleBar(position = "topright") %>% 
   addControl(html = legend_html, position = "bottomleft") %>% 
-  addCircleMarkers(lng = gunViolence_CO$longitude, lat = gunViolence_CO$latitude, radius = 1)
+  addCircleMarkers(lng = gunViolence_CO$longitude, lat = gunViolence_CO$latitude, 
+                   radius = 3, stroke = TRUE, fill = TRUE, 
+                   fillColor = "orange", color = "black", weight = 1, fillOpacity = 1, opacity = 0.5)
 heatmap_CO
 
 
