@@ -56,12 +56,12 @@ state_data <- final_df %>%
   summarise(incidents = sum(n_injured) + sum(n_killed))
 
 map <-plot_usmap(data = state_data, values = "incidents", lines = "black") + 
-  scale_fill_continuous(name = "Number of incidents", low = "#EDF8E9", high = "#006D2C") + 
+  scale_fill_continuous(name = "Number of Totel Injuries and Fatalities", low = "#EDF8E9", high = "#006D2C") + 
   theme(legend.position = "right") +
-  labs(title = "Number of incidents by State in the US (2013 - 2018)", caption = "Data: Gun Violence Data")
+  labs(title = "Totel Injuries and Fatalities by State in the US (2013 - 2018)", caption = "Data: Gun Violence Data")
 
-#ggsave('map.png', width = 12, height = 6)
-
+#ggsave('map22.png', width = 12, height = 6)
+map
 ```
 
 
@@ -72,7 +72,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
-df <- df %>%
+df <- final_df %>%
   mutate(
     date = as.Date(date), 
     day_of_week = wday(date, label = TRUE) 
@@ -81,19 +81,34 @@ df <- df %>%
   summarise(total_incidents = sum(n_injured) + sum(n_killed)) %>%
   arrange(day_of_week)
 
+df <- df %>%
+  mutate(rank = rank(-total_incidents))
+
+get_color <- function(rank) {
+  colors <- colorRampPalette(c("#006D2C", "#EDF8E9"))(max(df$rank))
+  return(colors[rank])
+}
+df$color <- sapply(df$rank, get_color)
 
 ```
 
 ```{r}
-week_inc <- ggplot(df, aes(x = day_of_week, y = total_incidents, fill = day_of_week)) +
-  geom_col(show.legend = FALSE) + 
-  labs(title = "Total Incidents by Day of the Week in the US (2013 - 2018)",
-       x = "Day of the Week", y = "Total Incidents",caption = "Data: Gun Violence Data" ) +
-  scale_fill_brewer(palette = "Paired") +  
+week_inc2 <- ggplot(df, aes(x = day_of_week, y = total_incidents, fill = color)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Totel Injuries and Fatalities by Day of the Week",
+       x = "Day of the Week", y = "Totel Injuries and Fatalities", caption = "Data: Gun Violence Data",
+       subtitle = "United States (2013 - 2018)") +
+  scale_fill_identity() +  
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
-week_inc
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+week_inc2
+ggsave('week_inc22.png', width = 12, height = 6)
 ```
+
+
+
+
 
 
 
@@ -128,15 +143,15 @@ Seasonal <- ggplot(monthly_trends, aes(x = month, y = total_incidents)) +
   geom_text(data = top_months_each_year, aes(x = month, y = total_incidents, label = label),
             vjust = -1, color = "#333333", size = 3.5, nudge_y = 50) +
   labs(title = "Seasonal Trends in Gun Violence Incidents",
-       x = "Month", y = "Total Incidents",caption = "Data: Gun Violence Data",
-       subtitle = "Highlighting the month with the highest number of incidents for each Year") +
+       x = "Month", y = "Total Injuries and Fatalities",caption = "Data: Gun Violence Data",
+       subtitle = "Highlighting the month with the highest number of Injuries and Fatalities for each Year") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   expand_limits(y = c(NA, max(monthly_trends$total_incidents) * 1.2))
 
 
-#ggsave('Seasonal.png', width = 12, height = 6)
-
+#ggsave('Seasonal222.png', width = 12, height = 6)
+Seasonal
 ```
 
 

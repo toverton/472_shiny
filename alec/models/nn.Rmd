@@ -41,54 +41,71 @@ daily_trends <- df %>%
 ```
 
 
+
+
 ```{r}
 # Splitting 
-training <- daily_trends %>% filter(date < as.Date("2017-03-31"))
-testing <- daily_trends %>% filter(date >= as.Date("2017-03-31"))
+training <- daily_trends %>%filter(date >= as.Date("2014-01-01") & date < as.Date("2017-01-01"))
+testing <- daily_trends %>%filter(date >= as.Date("2017-01-01") & date <= as.Date("2017-12-31"))
 
 
 ```
 
 
-
-
 ```{r}
-data_scaled <- scale(daily_trends$total_incidents)
-
-
-X <- data_scaled[-length(data_scaled)]
-y <- data_scaled[-1]
-
-
-split_index <- which(daily_trends$date < "2017-03-31")
-X_train <- array(X[split_index], dim = c(length(split_index), 1))
-y_train <- y[split_index]
-
-split_index_test <- which(daily_trends$date >= "2017-03-31")
-X_test <- array(X[split_index_test], dim = c(length(split_index_test), 1))
-y_test <- y[split_index_test]
+train_X <- training[, -which(names(training) %in% c("date", "total_incidents"))]
+train_y <- training[["total_incidents"]]
+test_X <- testing[, -which(names(testing) %in% c("date", "total_incidents"))]
+test_y <- testing[["total_incidents"]]
 ```
 
 
 
 ```{r}
+#scaling
+train_X <- scale(train_X)
+test_X <- scale(test_X, center = attr(train_X, "scaled:center"), scale = attr(train_X, "scaled:scale"))
+
+# Reshaping 3D [samples, timesteps, features]
+dim(train_X) <- c(nrow(train_X), 1, ncol(train_X))
+dim(test_X) <- c(nrow(test_X), 1, ncol(test_X))
+
+cat("Shapes:\n")
+cat("Train_X:", dim(train_X), "\n")
+cat("Train_y:", length(train_y), "\n")
+cat("Test_X:", dim(test_X), "\n")
+cat("Test_y:", length(test_y), "\n")
+```
+
+
+
+
+
+```{r}
+#model
 
 model <- keras_model_sequential() %>%
-  layer_dense(units = 50, activation = 'relu', input_shape = c(1)) %>%
+  layer_lstm(units = 50, activation = 'relu', input_shape = c(1, ncol(train_X))) %>%
   layer_dense(units = 1)
 
 
 model %>% compile(
-  optimizer = 'adam',
-  loss = 'mean_squared_error'
+  loss = 'mean_squared_error',
+  optimizer = optimizer_adam(),
+  metrics = c('mean_absolute_error')
 )
 
+```
 
+
+
+```{r}
 history <- model %>% fit(
-  X_train, y_train,
-  epochs = 100,
-  batch_size = 12,
-  validation_split = 0.2
+  train_X, train_y,
+  epochs = 200,
+  batch_size = 32,
+  validation_split = 0.2,
+  verbose = 2
 )
 ```
 
