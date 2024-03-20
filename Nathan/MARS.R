@@ -8,6 +8,10 @@ library(pdp)
 library(readr)
 library(readxl)
 library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(lubridate)
+library(reshape2)
 
 gunViolence = read_csv("final_df.csv")
 yearly_pop = read_excel("yearly_pop.xlsx")
@@ -49,7 +53,6 @@ gunViolence |>
 #----                                                                            ----#
 
 
-mars1 = earth(n_killed ~ ., data = gunViolence)
+mars1 = earth(n_killed ~ ., data = gunViolence, Use.beta.cache = FALSE)
 print(mars1)
-summary(mars1) %>% .$coefficients %>% head(10)
-plot(mars1, which = 1)
+
