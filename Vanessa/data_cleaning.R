@@ -2,7 +2,6 @@ library(tidyverse)
 library(readxl)
 library(reshape2)
 library(ggplot2)
-#library(latlong2)
 
 #reading in original file
 orig_df <- read_csv("./gun_violence_data.csv")
@@ -17,6 +16,16 @@ if(is.Date(orig_df$date) == F){
   orig_df$date <- sapply(orig_df$date, str_to_date)
 }
 #-----                            -----#
+
+Pos_to_Neg_Long <- function(long_val){
+  if(isTRUE(long_val > 0) == TRUE) {
+    return(-long_val)
+  } else {
+    return(long_val)
+  }
+}
+
+orig_df$longitude <- sapply(orig_df$longitude, Pos_to_Neg_Long)
 
 #removing variables 
 orig_df |> 
@@ -97,10 +106,5 @@ final_df <- final_df |>
 final_df |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> final_df
 
-#making a df to convert long/lat to counties
-#can't get it to work, also lots of NAs
-
-# lat_long_df <- tibble(longitude = as.numeric(lean_df$longitude), 
-#                       latitude = as.numeric(lean_df$latitude), 
-#                       incident_id = lean_df$incident_id) |>
-#   drop_na()
+rm(date_decomp, lean_df, orig_df, yearly_pop, yearly_pop_final, yearly_pop_melt, 
+   Pos_to_Neg_Long, remove_state_periods)
