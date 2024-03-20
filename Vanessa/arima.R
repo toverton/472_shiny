@@ -8,16 +8,18 @@ library(astsa)
 
 #creating training and test data frames
 final_df |> 
-  filter(year != 2013 & year != 2017 & year != 2018) |> 
+  filter(year != 2013 & year != 2017 & year != 2018) |>
   select(c(date, n_killed)) |>
   group_by(date) |> 
   summarize(total_killed = sum(n_killed)) -> training_df
+#mutate_at(c('total_killed'), ~(scale(.) %>% as.vector))
 
 final_df |> 
   filter(year == 2017) |>
   select(c(date, n_killed)) |>
   group_by(date) |> 
   summarize(total_killed = sum(n_killed)) -> test_df
+#mutate_at(c('total_killed'), ~(scale(.) %>% as.vector))
 
 training_df_ts <- ts(training_df$total_killed, training_df$date) 
 test_df_ts <- ts(test_df$total_killed, test_df$date) 
@@ -43,7 +45,9 @@ sqrt(mean((test_df_ts - sarima_pred)^2)) -> sarima_rmse
 sarima_pred |> 
   as_tibble() -> sarima_pred_df
 
-ggplot() + geom_line(aes(x = test_df$date, y = sarima_pred_df$value, 
+ggplot() + geom_line(aes(x = training_df$date, y = training_df$total_killed, 
+                         color = "Training" )) + 
+  geom_line(aes(x = test_df$date, y = sarima_pred_df$value, 
                          color = "Forecasted")) + 
   geom_line(aes(x = test_df$date, y = test_df$total_killed,
                 color = "Observed"), alpha = 0.5) + 
@@ -53,5 +57,5 @@ ggplot() + geom_line(aes(x = test_df$date, y = sarima_pred_df$value,
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         legend.title=element_blank()) +
-  scale_color_manual(values = c("black", "darkgray"),) + 
+  scale_color_manual(values = c("black", "darkgray", "dodgerblue2")) +
   labs(x = "Date", y = "Total Fatalities")
