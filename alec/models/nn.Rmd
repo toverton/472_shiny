@@ -35,7 +35,7 @@ daily_trends <- df %>%
   group_by(date) %>%
   summarise(total_killed = sum(n_killed),
             total_injured = sum(n_injured),
-            total_incidents = total_killed + total_injured) %>%
+            total_incidents = total_killed) %>%
   ungroup()  
 
 ```
@@ -66,6 +66,9 @@ test_y <- testing[["total_incidents"]]
 train_X <- scale(train_X)
 test_X <- scale(test_X, center = attr(train_X, "scaled:center"), scale = attr(train_X, "scaled:scale"))
 
+train_y_scaled <- scale(train_y)
+test_y_scaled <- scale(test_y, center = attr(train_y_scaled, "scaled:center"), scale = attr(train_y_scaled, "scaled:scale"))
+
 # Reshaping 3D [samples, timesteps, features]
 dim(train_X) <- c(nrow(train_X), 1, ncol(train_X))
 dim(test_X) <- c(nrow(test_X), 1, ncol(test_X))
@@ -85,7 +88,7 @@ cat("Test_y:", length(test_y), "\n")
 #model
 
 model <- keras_model_sequential() %>%
-  layer_lstm(units = 50, activation = 'relu', input_shape = c(1, ncol(train_X))) %>%
+  layer_lstm(units = 50, activation = 'relu', input_shape = c(1, 2)) %>%
   layer_dense(units = 1)
 
 
@@ -101,8 +104,8 @@ model %>% compile(
 
 ```{r}
 history <- model %>% fit(
-  train_X, train_y,
-  epochs = 200,
+  train_X, train_y_scaled,
+  epochs = 100,
   batch_size = 32,
   validation_split = 0.2,
   verbose = 2
@@ -112,33 +115,55 @@ history <- model %>% fit(
 
 
 
-```{r}
-predictions <- model %>% predict(X_test)
 
-predictions_rescaled <- predictions * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
-y_test_rescaled <- y_test * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
+
+```{r}
+predictions <- model %>% predict(test_X)
+
+evaluate <- model %>% evaluate(test_X, test_y_scaled)
+evaluate
+```
+
+
+
+
+
+```{r}
+original_mean <- attr(train_y_scaled, "scaled:center")
+original_sd <- attr(train_y_scaled, "scaled:scale")
+predictions_rescaled <- predictions * original_sd + original_mean
 
 ```
 
+
+
 ```{r}
-plot(y_test_rescaled, type = 'l', col = 'red')
-lines(predictions_rescaled, col = 'blue')
+train_X <- training[, -which(names(training) %in% c("date", "total_incidents"))]
+train_y <- training[["total_incidents"]]
+test_X <- testing[, -which(names(testing) %in% c("date", "total_incidents"))]
+test_y <- testing[["total_incidents"]]
 ```
 
 ```{r}
+plot(predictions_rescaled, type = 'l')
+#lines(test_y, col = 'red')
+```
 
-valid_indices <- !is.na(predictions_vector) & !is.na(actual_vector)
-predictions_filtered <- predictions_vector[valid_indices]
-actual_filtered <- actual_vector[valid_indices]
+```{r}
+mae <- mean(abs(predictions_rescaled - test_y))
 
-mae <- mean(abs(predictions_filtered - actual_filtered))
-
-rmse <- sqrt(mean((predictions_filtered - actual_filtered)^2))
+rmse <- sqrt(mean((predictions_rescaled - test_y)^2))
 
 cat("MAE:", mae, "\nRMSE:", rmse, "\n")
-
-
 ```
+
+
+
+
+
+
+
+
 
 
 
@@ -155,7 +180,7 @@ cat("MAE:", mae, "\nRMSE:", rmse, "\n")
 ```{r}
 library(ggplot2)
 
-testing_df <- data.frame(date = testing$date, total_incidents = y_test_rescaled)
+testing_df <- data.frame(date = testing$date, total_incidents = test_y)
 
 forecast_df <- data.frame(date = testing$date, forecast = predictions_rescaled)
 
@@ -216,11 +241,46 @@ ggplot() +
 ```
 
 
+```{r}
+results <- data.frame(Time = seq_along(test_y),
+                      Actual = test_y,
+                      Forecast = predictions_rescaled)
+
+# Plot using ggplot
+gg <- ggplot(results, aes(x = Time)) +
+  geom_line(aes(y = Actual, color = "Actual")) +
+  geom_line(aes(y = Forecast, color = "Forecast")) +
+  labs(title = "Forecast vs Actual Values",
+       x = "Time",
+       y = "Value",
+       color = "Legend") +
+  theme_minimal() +
+  scale_color_manual(values = c("Actual" = "blue", "Forecast" = "red"))
+
+# Display the plot
+print(gg)
+```
 
 
 
 
 
+```{r}
+ggplot() + geom_line(aes(x = training$date, y = training$total_incidents, 
+                         color = "Training" )) + 
+  geom_line(aes(x = testing$date, y = predictions_rescaled, 
+                         color = "Forecasted")) + 
+  geom_line(aes(x = testing$date, y = testing$total_incidents,
+                color = "Observed"), alpha = 0.5) + 
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title=element_blank()) +
+  scale_color_manual(values = c("black", "darkgray", "dodgerblue2")) +
+  labs(x = "Date", y = "Total Fatalities")
+```
 
 
 
