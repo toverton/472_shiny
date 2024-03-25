@@ -58,6 +58,6 @@ gunViolence_test = testing(gunViolence_split)
 
 mars1 = earth(formula = n_killed ~ year + incident_wday + state + incident_month, data = gunViolence_train)
 print(summary(mars1))
-plot(x = mars1)
+plot(x = mars1, which = 1)
 
 
