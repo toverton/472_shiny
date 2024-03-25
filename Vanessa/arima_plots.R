@@ -28,7 +28,8 @@ auto_corr_df |>
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(face="bold", size = 9)) +
+        axis.text.x = element_text(face="bold", size = 12),
+        text = element_text(size = 14)) +
   labs(x = "Lag", 
        y = "Autocorrelation", 
        title = "Autocorrelation of Total Fatalities Training Series 
@@ -54,7 +55,8 @@ par_auto_corr_df |>
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(face="bold", size = 9)) +
+        axis.text.x = element_text(face="bold", size = 12),
+        text = element_text(size = 14)) +
   labs(x = "Lag", 
        y = "Partial Autocorrelation", 
        title = "Partial Autocorrelation of Total Fatalities Training Series 
@@ -88,7 +90,8 @@ auto_corr_lagged_df |>
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(face="bold", size = 9)) +
+        axis.text.x = element_text(face="bold", size = 12),
+        text = element_text(size = 14)) +
   labs(x = "Lag", 
        y = "Autocorrelation", 
        title = "Autocorrelation of Total Fatalities Training Series 
@@ -114,7 +117,8 @@ par_auto_corr_lagged_df |>
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(face="bold", size = 9)) +
+        axis.text.x = element_text(face="bold", size = 12),
+        text = element_text(size = 14)) +
   labs(x = "Lag", 
        y = "Partial Autocorrelation", 
        title = "Partial Autocorrelation of Total Fatalities Training Series 

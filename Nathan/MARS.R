@@ -53,6 +53,8 @@ gunViolence |>
 #----                                                                            ----#
 
 
-mars1 = earth(n_killed ~ ., data = gunViolence, Use.beta.cache = FALSE)
-print(mars1)
+mars1 = earth(formula = n_killed ~ year, data = gunViolence)
+print(summary(mars1))
+plot(x = mars1)
+
 
