@@ -48,14 +48,16 @@ sarima_pred |>
 ggplot() + geom_line(aes(x = training_df$date, y = training_df$total_killed, 
                          color = "Training" )) + 
   geom_line(aes(x = test_df$date, y = sarima_pred_df$value, 
-                         color = "Forecasted")) + 
+                         color = "Forecasted Test")) + 
   geom_line(aes(x = test_df$date, y = test_df$total_killed,
-                color = "Observed"), alpha = 0.5) + 
+                color = "Observed Test"), alpha = 0.5) + 
   theme_bw() + 
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
-        legend.title=element_blank()) +
-  scale_color_manual(values = c("black", "darkgray", "dodgerblue2")) +
-  labs(x = "Date", y = "Total Fatalities")
+        legend.title=element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(values = c("black", "darkgray", "#93c47dff")) +
+  labs(x = "Date", y = "Total Fatalities", title = "SARIMA Model Fit")
+ggsave("sarima_fit_1.png", width = 16, height = 6)

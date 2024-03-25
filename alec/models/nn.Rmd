@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-final_df <- read.csv("final_df.csv") 
+final_df <- read.csv("C:/Users/alyaq/Desktop/spring2024/stat472/472_shiny/alec/final_df.csv") 
 ```
 
 #Random Forests and Gradient Boosting Machines (GBM)
@@ -22,7 +22,6 @@ final_df <- read.csv("final_df.csv")
 library(tidyverse)
 library(lubridate)
 library(keras)
-library(TensorFlow)
 library(forecast)
 ```
 
@@ -36,104 +35,179 @@ daily_trends <- df %>%
   group_by(date) %>%
   summarise(total_killed = sum(n_killed),
             total_injured = sum(n_injured),
-            total_incidents = total_killed + total_injured) %>%
+            total_incidents = total_killed) %>%
   ungroup()  
 
 ```
 
-```{r}
-write.csv(daily_trends, file = "daily_trends1.csv")
-```
+
 
 
 ```{r}
 # Splitting 
-training <- daily_trends %>% filter(date < as.Date("2017-03-31"))
-testing <- daily_trends %>% filter(date >= as.Date("2017-03-31"))
+training <- daily_trends %>%filter(date >= as.Date("2014-01-01") & date < as.Date("2017-01-01"))
+testing <- daily_trends %>%filter(date >= as.Date("2017-01-01") & date <= as.Date("2017-12-31"))
 
 
 ```
 
 
 ```{r}
-last_year_start <- max(df$date) %>% year() %>% {ymd(paste0(. - 1, "-01-01"))}
+train_X <- training[, -which(names(training) %in% c("date", "total_incidents"))]
+train_y <- training[["total_incidents"]]
+test_X <- testing[, -which(names(testing) %in% c("date", "total_incidents"))]
+test_y <- testing[["total_incidents"]]
+```
+
+
+
+```{r}
+#scaling
+train_X <- scale(train_X)
+test_X <- scale(test_X, center = attr(train_X, "scaled:center"), scale = attr(train_X, "scaled:scale"))
+
+train_y_scaled <- scale(train_y)
+test_y_scaled <- scale(test_y, center = attr(train_y_scaled, "scaled:center"), scale = attr(train_y_scaled, "scaled:scale"))
+
+# Reshaping 3D [samples, timesteps, features]
+dim(train_X) <- c(nrow(train_X), 1, ncol(train_X))
+dim(test_X) <- c(nrow(test_X), 1, ncol(test_X))
+
+cat("Shapes:\n")
+cat("Train_X:", dim(train_X), "\n")
+cat("Train_y:", length(train_y), "\n")
+cat("Test_X:", dim(test_X), "\n")
+cat("Test_y:", length(test_y), "\n")
 ```
 
 
 
 
 
-
 ```{r}
-data_scaled <- scale(daily_trends$total_incidents)
-
-
-X <- data_scaled[-length(data_scaled)]
-y <- data_scaled[-1]
-
-
-split_index <- which(daily_trends$date < "2017-03-31")
-X_train <- array(X[split_index], dim = c(length(split_index), 1))
-y_train <- y[split_index]
-
-split_index_test <- which(daily_trends$date >= "2017-03-31")
-X_test <- array(X[split_index_test], dim = c(length(split_index_test), 1))
-y_test <- y[split_index_test]
-```
-
-
-
-```{r}
+#model
 
 model <- keras_model_sequential() %>%
-  layer_dense(units = 50, activation = 'relu', input_shape = c(1)) %>%
+  layer_lstm(units = 50, activation = 'relu', input_shape = c(1, 2)) %>%
   layer_dense(units = 1)
 
 
 model %>% compile(
-  optimizer = 'adam',
-  loss = 'mean_squared_error'
+  loss = 'mean_squared_error',
+  optimizer = optimizer_adam(),
+  metrics = c('mean_squared_error')
 )
 
+```
 
+
+
+```{r}
 history <- model %>% fit(
-  X_train, y_train,
-  epochs = 100,
-  batch_size = 12,
-  validation_split = 0.2
+  train_X, train_y_scaled,
+  epochs = 30,
+  batch_size = 32,
+  validation_split = 0.2,
+  verbose = 2
 )
 ```
 
 
 
-
 ```{r}
-predictions <- model %>% predict(X_test)
-
-predictions_rescaled <- predictions * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
-y_test_rescaled <- y_test * sd(daily_trends$total_incidents) + mean(daily_trends$total_incidents)
-
+history_list <- history$metrics
+history_df <- as.data.frame(history_list)
+history_df$epoch <- seq_len(nrow(history_df))
 ```
 
 ```{r}
-plot(y_test_rescaled, type = 'l', col = 'red')
-lines(predictions_rescaled, col = 'blue')
+names(history_df)
+```
+
+
+```{r}
+history_long <- pivot_longer(history_df, 
+                             cols = c("loss", "val_loss"), 
+                             names_to = "Type", 
+                             values_to = "Loss")
+
+
+history_long$Type <- recode(history_long$Type, 
+                            loss = "Training", 
+                            val_loss = "Validation")
+```
+
+
+
+```{r}
+lossplot <-ggplot(history_long, aes(x = epoch, y = Loss, color = Type)) +
+  geom_line() +  # Draw lines
+  geom_point() +  # Add points for each epoch
+  labs(title = "Training and Validation Loss",
+       x = "Epoch", y = "Loss (MSE)",
+       color = "Type") +
+  theme_minimal() +
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title = element_blank()) 
+lossplot
+
+```
+
+
+
+```{r}
+predictions <- model %>% predict(test_X)
+
+evaluatetest <- model %>% evaluate(test_X, test_y_scaled)
+evaluatetest
+evaluatetrain <- model %>% evaluate(train_X, train_y_scaled)
+evaluatetrain
+```
+
+
+
+
+
+```{r}
+original_mean <- attr(train_y_scaled, "scaled:center")
+original_sd <- attr(train_y_scaled, "scaled:scale")
+predictions_rescaled <- predictions * original_sd + original_mean
+
+```
+
+
+
+```{r}
+train_X <- training[, -which(names(training) %in% c("date", "total_incidents"))]
+train_y <- training[["total_incidents"]]
+test_X <- testing[, -which(names(testing) %in% c("date", "total_incidents"))]
+test_y <- testing[["total_incidents"]]
 ```
 
 ```{r}
+plot(predictions_rescaled, type = 'l')
+#lines(test_y, col = 'red')
+```
 
-valid_indices <- !is.na(predictions_vector) & !is.na(actual_vector)
-predictions_filtered <- predictions_vector[valid_indices]
-actual_filtered <- actual_vector[valid_indices]
+```{r}
+mae <- mean(abs(predictions_rescaled - test_y))
 
-mae <- mean(abs(predictions_filtered - actual_filtered))
-
-rmse <- sqrt(mean((predictions_filtered - actual_filtered)^2))
+rmse <- sqrt(mean((predictions_rescaled - test_y)^2))
 
 cat("MAE:", mae, "\nRMSE:", rmse, "\n")
-
-
 ```
+
+
+
+
+
+
+
+
 
 
 
@@ -150,7 +224,7 @@ cat("MAE:", mae, "\nRMSE:", rmse, "\n")
 ```{r}
 library(ggplot2)
 
-testing_df <- data.frame(date = testing$date, total_incidents = y_test_rescaled)
+testing_df <- data.frame(date = testing$date, total_incidents = test_y)
 
 forecast_df <- data.frame(date = testing$date, forecast = predictions_rescaled)
 
@@ -158,28 +232,9 @@ all_actuals_df <- rbind(
   data.frame(date = training$date, total_incidents = training$total_incidents),
   testing_df
 )
-
-
 ```
 
 
-```{r}
-ggplot() +
-  geom_point(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
-  
-  geom_point(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
-  
-  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
-  
-  geom_point(data = forecast_df, aes(x = date, y = forecast), color = 'blue') +
-  
-  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
-       x = "Date", y = "Total Incidents",
-       caption = "Gray: Actual data for all time\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none") # Hide legend due to explicit caption
-```
 
 
 
@@ -190,34 +245,90 @@ ggplot() +
 ```{r}
 library(ggplot2)
 
-ggplot() +
+plot2 <- ggplot() +
   # Plot all actual incidents over time as a line for context
   geom_line(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
   
-  # Highlight actual incidents in the testing set with a line
   geom_line(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
   
-  # Overlay forecasted data for the testing period with a dashed line
   geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
   
-  # Add titles, labels, and customize the theme
-  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
+  labs(title = "Actual vs. Forecast Total Fatalities Across All Time",
        x = "Date", y = "Total Incidents",
-       caption = "Gray: Historical actual data\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
+       caption = "Data: Gun Violence Data",
+      subtitle = "Long short-term memory (LSTM) Model") +
+  
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none") # Hide legend due to explicit caption
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title=element_blank())
+plot2
+```
+
+
+```{r}
 
 ```
 
 
 
 
+```{r}
+results <- data.frame(Time = seq_along(test_y),
+                      Actual = test_y,
+                      Forecast = predictions_rescaled)
+
+# Plot using ggplot
+gg <- ggplot(results, aes(x = Time)) +
+  geom_line(aes(y = Actual, color = "Actual")) +
+  geom_line(aes(y = Forecast, color = "Forecast")) +
+  labs(title = "Forecast vs Actual Values",
+       x = "Time",
+       y = "Value",
+       color = "Legend") +
+  theme_minimal() +
+  scale_color_manual(values = c("Actual" = "blue", "Forecast" = "red"))
+
+# Display the plot
+print(gg)
+```
 
 
 
 
 
+```{r}
+plot1 <- ggplot() + geom_line(aes(x = training$date, y = training$total_incidents, 
+                         color = "Training" )) + 
+  geom_line(aes(x = testing$date, y = predictions_rescaled, 
+                         color = "Forecasted test")) + 
+  geom_line(aes(x = testing$date, y = testing$total_incidents,
+                color = "Observed test"), alpha = 0.5) + 
+  labs(title = "Actual vs. Forecast Total Fatalities",
+       x = "Date", y = "Total Incidents",
+       subtitle = "Long short-term memory (LSTM) Model",
+       color = "Legend", caption = "Data: Gun Violence Data")+
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title=element_blank()) +
+  scale_color_manual(values = c("black", "gray", "#bae4b3")) +
+  labs(x = "Date", y = "Total Fatalities")
 
+plot1
+
+```
+
+
+
+```{r}
+
+ggsave('plot1.png', width = 12, height = 6)
+```
 
 
