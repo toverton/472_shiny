@@ -52,8 +52,11 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 #----                                                                            ----#
 
+gunViolence_split = initial_split(gunViolence, prop = .7, strata = "n_killed")
+gunViolence_train = training(gunViolence_split)
+gunViolence_test = testing(gunViolence_split)
 
-mars1 = earth(formula = n_killed ~ year, data = gunViolence)
+mars1 = earth(formula = n_killed ~ year + incident_wday + state + incident_month, data = gunViolence_train)
 print(summary(mars1))
 plot(x = mars1)
 
