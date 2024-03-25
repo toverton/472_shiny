@@ -95,7 +95,7 @@ model <- keras_model_sequential() %>%
 model %>% compile(
   loss = 'mean_squared_error',
   optimizer = optimizer_adam(),
-  metrics = c('mean_absolute_error')
+  metrics = c('mean_squared_error')
 )
 
 ```
@@ -105,7 +105,7 @@ model %>% compile(
 ```{r}
 history <- model %>% fit(
   train_X, train_y_scaled,
-  epochs = 100,
+  epochs = 30,
   batch_size = 32,
   validation_split = 0.2,
   verbose = 2
@@ -114,14 +114,58 @@ history <- model %>% fit(
 
 
 
+```{r}
+history_list <- history$metrics
+history_df <- as.data.frame(history_list)
+history_df$epoch <- seq_len(nrow(history_df))
+```
+
+```{r}
+names(history_df)
+```
+
+
+```{r}
+history_long <- pivot_longer(history_df, 
+                             cols = c("loss", "val_loss"), 
+                             names_to = "Type", 
+                             values_to = "Loss")
+
+
+history_long$Type <- recode(history_long$Type, 
+                            loss = "Training", 
+                            val_loss = "Validation")
+```
+
+
+
+```{r}
+lossplot <-ggplot(history_long, aes(x = epoch, y = Loss, color = Type)) +
+  geom_line() +  # Draw lines
+  geom_point() +  # Add points for each epoch
+  labs(title = "Training and Validation Loss",
+       x = "Epoch", y = "Loss (MSE)",
+       color = "Type") +
+  theme_minimal() +
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title = element_blank()) 
+lossplot
+
+```
 
 
 
 ```{r}
 predictions <- model %>% predict(test_X)
 
-evaluate <- model %>% evaluate(test_X, test_y_scaled)
-evaluate
+evaluatetest <- model %>% evaluate(test_X, test_y_scaled)
+evaluatetest
+evaluatetrain <- model %>% evaluate(train_X, train_y_scaled)
+evaluatetrain
 ```
 
 
@@ -188,28 +232,9 @@ all_actuals_df <- rbind(
   data.frame(date = training$date, total_incidents = training$total_incidents),
   testing_df
 )
-
-
 ```
 
 
-```{r}
-ggplot() +
-  geom_point(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
-  
-  geom_point(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
-  
-  geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
-  
-  geom_point(data = forecast_df, aes(x = date, y = forecast), color = 'blue') +
-  
-  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
-       x = "Date", y = "Total Incidents",
-       caption = "Gray: Actual data for all time\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none") # Hide legend due to explicit caption
-```
 
 
 
@@ -220,25 +245,35 @@ ggplot() +
 ```{r}
 library(ggplot2)
 
-ggplot() +
+plot2 <- ggplot() +
   # Plot all actual incidents over time as a line for context
   geom_line(data = all_actuals_df, aes(x = date, y = total_incidents), color = 'gray', alpha = 0.5) +
   
-  # Highlight actual incidents in the testing set with a line
   geom_line(data = testing_df, aes(x = date, y = total_incidents), color = 'red') +
   
-  # Overlay forecasted data for the testing period with a dashed line
   geom_line(data = forecast_df, aes(x = date, y = forecast), color = 'blue', linetype = "dashed") +
   
-  # Add titles, labels, and customize the theme
-  labs(title = "Actual vs. Forecast Total Incidents Across All Time",
+  labs(title = "Actual vs. Forecast Total Fatalities Across All Time",
        x = "Date", y = "Total Incidents",
-       caption = "Gray: Historical actual data\nRed: Actual data for testing period\nBlue dashed: Forecasted data") +
+       caption = "Data: Gun Violence Data",
+      subtitle = "Long short-term memory (LSTM) Model") +
+  
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none") # Hide legend due to explicit caption
+  theme_bw() + 
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.title=element_blank())
+plot2
+```
+
+
+```{r}
 
 ```
+
+
 
 
 ```{r}
@@ -266,23 +301,34 @@ print(gg)
 
 
 ```{r}
-ggplot() + geom_line(aes(x = training$date, y = training$total_incidents, 
+plot1 <- ggplot() + geom_line(aes(x = training$date, y = training$total_incidents, 
                          color = "Training" )) + 
   geom_line(aes(x = testing$date, y = predictions_rescaled, 
-                         color = "Forecasted")) + 
+                         color = "Forecasted test")) + 
   geom_line(aes(x = testing$date, y = testing$total_incidents,
-                color = "Observed"), alpha = 0.5) + 
+                color = "Observed test"), alpha = 0.5) + 
+  labs(title = "Actual vs. Forecast Total Fatalities",
+       x = "Date", y = "Total Incidents",
+       subtitle = "Long short-term memory (LSTM) Model",
+       color = "Legend", caption = "Data: Gun Violence Data")+
   theme_bw() + 
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         legend.title=element_blank()) +
-  scale_color_manual(values = c("black", "darkgray", "dodgerblue2")) +
+  scale_color_manual(values = c("black", "gray", "#bae4b3")) +
   labs(x = "Date", y = "Total Fatalities")
+
+plot1
+
 ```
 
 
 
+```{r}
+
+ggsave('plot1.png', width = 12, height = 6)
+```
 
 
