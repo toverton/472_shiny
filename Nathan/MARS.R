@@ -58,7 +58,11 @@ gunViolence_train = training(gunViolence_split)
 gunViolence_test = testing(gunViolence_split)
 
 # Create MARS object
-mars1 = earth(formula = n_killed ~ year + incident_wday + state + incident_month, data = gunViolence_train)
+mars1 = earth(formula = n_killed ~ year + 
+                incident_wday + 
+                incident_month +  
+                state,
+              data = gunViolence_train, degree = 3)
 print(summary(mars1))
 plot(x = mars1, which = 1)
 
@@ -67,20 +71,23 @@ hyper_grid = expand.grid(
   degree = 1:3, 
   nprune = seq(2, 100, length.out = 10) %>% floor())
 
-gunViolence_train2 = gunViolence_train %>% select(year, incident_wday, state, incident_month)
-tuned_mars = train(
-  x = gunViolence_train2,
-#  x = subset(gunViolence_train, select = c(year, incident_wday, state, incident_month)),
+gunViolence_train2 = gunViolence_train %>% select(n_killed, year, incident_wday, state, incident_month, city_or_county)
+
+marsTune = train(
+  x = subset(gunViolence_train, select = -n_killed),
   y = gunViolence_train$n_killed,
   method = "earth",
-  metric = "RMSE",
-  trControl = trainControl(method = "cv", number = 10),
-  tuneGrid = hyper_grid)
+  metric = "Rsquared",
+  trControl = trainControl(method = "repeatedcv", 
+                           number = 5, repeats = 3), 
+  tuneGrid = expand.grid(degree = 1:5, nprune = 100))
 
-# best model
-tuned_mars$bestTune
+marsRegression = train(n_killed ~ year + incident_wday + incident_month + state, 
+                       data = gunViolence_train2, method = "lm", metric = "RMSE", 
+                       trControl = trainControl(method = "cv", number = 10),
+                       preProcess = c("zv", "center", "scale"))
 
-ggplot(tuned_mars)
+plot(marsRegression)
 
 
 
