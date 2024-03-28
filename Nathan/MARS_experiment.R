@@ -53,12 +53,14 @@ gunViolence |>
 #----                                                                            ----#
 
 
+
+
 # Prepare predictors and response variable
-predictors <- gunViolence[, -which(names(gunViolence) == "n_killed")]
+predictors <- gunViolence[, c('state', 'city_or_county', 'year', 'incident_wday', 'incident_month')]
 response <- gunViolence$n_killed
 
 # Build MARS model
-mars_model <- earth(predictors ~ response)
+mars_model <- earth(response ~ predictors)
 
 # Print summary of the model
 summary(mars_model)
