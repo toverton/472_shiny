@@ -30,19 +30,19 @@ yearly_pop |>
          "2018" = 7) |> 
   na.omit() -> yearly_pop_final
 
-remove_state_periods <- function(a_state_str) {
+remove_state_periods = function(a_state_str) {
   a_state_str |> 
     str_replace("\\.", "") -> period_rm_state
   return(period_rm_state)
 }
 
-yearly_pop_final$state <- sapply(yearly_pop_final$state, remove_state_periods)
+yearly_pop_final$state = sapply(yearly_pop_final$state, remove_state_periods)
 
 yearly_pop_final |>
   melt(na.rm = FALSE, value.name = "state_population", id = "state") |>
   rename(year = variable) -> yearly_pop_melt
 
-yearly_pop_melt$year <- as.numeric(as.character(yearly_pop_melt$year))
+yearly_pop_melt$year = as.numeric(as.character(yearly_pop_melt$year))
 
 gunViolence = gunViolence |>
   inner_join(yearly_pop_melt, by=c("state","year"))
@@ -52,22 +52,15 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 #----                                                                            ----#
 
+# Randomly selected 30% of the data
+N = round(nrow(gunViolence) * 0.3)
+sampleIndices = sample(1:nrow(gunViolence), size = N, replace = FALSE)
+
+# New data 
+gunViolence_sampled = gunViolence[sampleIndices, ]
+gunViolence_sampled = gunViolence[order(gunViolence$year), ]
 
 
 
-# Prepare predictors and response variable
-predictors <- gunViolence[, c('state', 'city_or_county', 'year', 'incident_wday', 'incident_month')]
-response <- gunViolence$n_killed
 
-# Build MARS model
-mars_model <- earth(response ~ predictors)
 
-# Print summary of the model
-summary(mars_model)
-
-# Visualize the model
-plot(mars_model)
-
-# Make predictions using the trained model
-# Replace 'new_data' with your new dataset for prediction
-predictions <- predict(mars_model, newdata = new_data)
