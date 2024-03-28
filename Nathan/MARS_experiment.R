@@ -52,14 +52,23 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 #----                                                                            ----#
 
+gunViolence2 = select(gunViolence, 
+                     -incident_characteristics, -location_description, 
+                     -incident_id, -date, 
+                     -participant_age_group, -per_hthous_killed,
+                     -participant_age, -participant_gender)
+
+
 # Randomly selected 30% of the data
-N = round(nrow(gunViolence) * 0.3)
-sampleIndices = sample(1:nrow(gunViolence), size = N, replace = FALSE)
+N = round(nrow(gunViolence2) * 0.25)
+sampleIndices = sample(1:nrow(gunViolence2), size = N, replace = FALSE)
 
 # New data 
-gunViolence_sampled = gunViolence[sampleIndices, ]
-gunViolence_sampled = gunViolence[order(gunViolence$year), ]
+gunViolence_sampled = gunViolence2[sampleIndices, ]
+gunViolence_sampled = gunViolence_sampled[order(gunViolence_sampled$year), ]
 
+
+MARS = earth(n_killed ~ ., data = gunViolence_sampled, degree = 2)
 
 
 
