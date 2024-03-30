@@ -126,7 +126,7 @@ heatmap_perCapita = leaflet(gunViolence) %>%
 heatmap_perCapita
 
 
-
+# https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
 #-------------------------------------Southern U.S.A-------------------------------------------------
 US_South = c("Alabama", 'Arkansas', 
              "Delaware", "Florida", "Georgia", 
@@ -216,7 +216,6 @@ heatmap_perCapita_northeast = leaflet(gunViolence_northeast) %>%
 heatmap_perCapita_northeast
 
 #-------------------------------------------------------------------------------------------------------
-
 
 # Create pop-ups for incidents where n_killed ≥ 10
 LVshooting = paste(sep = "<br/>",
