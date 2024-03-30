@@ -15,7 +15,8 @@ library(reshape2)
 # Read in datasets
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
-
+# Filter out NA values in longitude and latitude
+gunViolence = gunViolence %>% filter(!is.na(longitude) & !is.na(latitude))
 #----                                                             ----#
 yearly_pop |>
   filter(!row_number() %in% seq(1:8)) |>
@@ -70,8 +71,7 @@ map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.
 map_highCasuality                                                                            ---#
   
   
-  # Filter out NA values in longitude and latitude
-  gunViolence = gunViolence %>% filter(!is.na(longitude) & !is.na(latitude))
+ 
 
 # Define legend HTML content with gradient
 legend_html = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
@@ -126,6 +126,98 @@ heatmap_perCapita = leaflet(gunViolence) %>%
 heatmap_perCapita
 
 
+
+#-------------------------------------Southern U.S.A-------------------------------------------------
+US_South = c("Alabama", 'Arkansas', 
+             "Delaware", "Florida", "Georgia", 
+             "Kentucky", "Louisiana", "Maryland", 
+             "Mississippi", "North Carolina", "Oklahoma", 
+             "South Carolina", "Tennessee", "Texas", "Virginia", 
+            "West Virginia")
+
+gunViolence_south = filter(gunViolence, state %in% US_South)
+heatmap_perCapita_south = leaflet(gunViolence_south) %>%
+  addTiles() %>% setView(lng = -86.8104, lat = 33.5186, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence_south$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_south
+
+#------------------------------------Midwestern U.S.A.-------------------------------------------------
+US_midwest = c("Illinois", "Indiana", "Iowa", "Kansas", "Michigan", "Minnesota", "Missouri", "Nebraska", 
+  "North Dakota", "Ohio", "South Dakota", "Wisconsin")
+
+gunViolence_mw = filter(gunViolence, state %in% US_midwest)
+heatmap_perCapita_midwest = leaflet(gunViolence_mw) %>%
+  addTiles() %>% setView(lng = -93.5366, lat = 42.129, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence_mw$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_midwest
+
+#------------------------------------Western U.S.A.-------------------------------------------------
+US_west = c("Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", 
+                "Wyoming", "California", "Oregon", "Washington")
+
+gunViolence_west = filter(gunViolence, state %in% US_west)
+heatmap_perCapita_west = leaflet(gunViolence_west) %>%
+  addTiles() %>% setView(lng = -111.876183, lat = 40.758701, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence_west$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_west
+
+#------------------------------------Northeastern U.S.A.-------------------------------------------------
+US_northeast = c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", 
+                 "Vermont", "New Jersey", "New York", "Pennsylvania")
+
+gunViolence_northeast = filter(gunViolence, state %in% US_northeast)
+heatmap_perCapita_northeast = leaflet(gunViolence_northeast) %>%
+  addTiles() %>% setView(lng = -74.0060, lat = 40.7128, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence_west$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_northeast
+
+#-------------------------------------------------------------------------------------------------------
+
+
 # Create pop-ups for incidents where n_killed ≥ 10
 LVshooting = paste(sep = "<br/>",
                    "Las Vegas Shooting",
@@ -173,7 +265,7 @@ heatmap_markers = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
 heatmap_markers
 
 
-hberg
+#aa
 gunViolence_CO = filter(gunViolence, state == "Colorado")
 heatmap_CO = leaflet(gunViolence_CO) %>%
   addTiles() %>% setView(lng = -105.7821, lat = 38.5501, zoom = 6) %>%
