@@ -115,10 +115,10 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = ~per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
     max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
-    radius = 20,  
+    radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "topright") %>%
@@ -142,10 +142,10 @@ heatmap_perCapita_south = leaflet(gunViolence_south) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = ~gunViolence_south$per_hthous_killed,  
+    intensity = ~gunViolence$per_hthous_killed,  
     blur = 20,    
     max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
-    radius = 20,  
+    radius = 25,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "topright") %>%
@@ -163,10 +163,10 @@ heatmap_perCapita_midwest = leaflet(gunViolence_mw) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = ~gunViolence_mw$per_hthous_killed,  
+    intensity = ~gunViolence$per_hthous_killed,  
     blur = 20,    
     max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
-    radius = 20,  
+    radius = 25,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "topright") %>%
@@ -184,10 +184,10 @@ heatmap_perCapita_west = leaflet(gunViolence_west) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = ~gunViolence_west$per_hthous_killed,  
+    intensity = ~gunViolence$per_hthous_killed,  
     blur = 20,    
     max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
-    radius = 20,  
+    radius = 25,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "topright") %>%
@@ -205,8 +205,8 @@ heatmap_perCapita_northeast = leaflet(gunViolence_northeast) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = ~gunViolence_west$per_hthous_killed,  
-    blur = 20,    
+    intensity = ~gunViolence$per_hthous_killed,  
+    blur = 25,    
     max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
     radius = 20,  
     gradient = c("blue", "green", "yellow", "red")  
@@ -215,7 +215,46 @@ heatmap_perCapita_northeast = leaflet(gunViolence_northeast) %>%
   addControl(html = legend_html_perCapita, position = "bottomleft")
 heatmap_perCapita_northeast
 
-#-------------------------------------------------------------------------------------------------------
+#------------------------------------Alaska, U.S.A.-------------------------------------------------
+gunViolence_alaska = filter(gunViolence, state == "Alaska")
+
+heatmap_perCapita_ak = leaflet(gunViolence_alaska) %>%
+  addTiles() %>% setView(lng = -151.1940, lat = 64.55206, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence_alaska$per_hthous_killed,  
+    blur = 25,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_ak
+
+#------------------------------------Hawaii, U.S.A.-------------------------------------------------
+gunViolence_hawaii = filter(gunViolence, state == "Hawaii")
+
+heatmap_perCapita_hi = leaflet(gunViolence_hawaii) %>%
+  addTiles() %>% setView(lng = -157, lat = 20, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = ~gunViolence$per_hthous_killed,  
+    blur = 25,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 20,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_hi
+
+#---------------------------------------------------------------------------------------------------
+
 
 # Create pop-ups for incidents where n_killed ≥ 10
 LVshooting = paste(sep = "<br/>",
