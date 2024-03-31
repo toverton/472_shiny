@@ -35,7 +35,7 @@ acf(train_df_ts_lagged)
 pacf(train_df_ts_lagged)
 
 sarima_fit <- sarima(training_df_ts, p = 0, d = 0, q = 0, P = 0, D = 1, Q = 1, S = 7)
-sarima.for(training_df_ts, 364, 1, 0, 1, 0, 1, 1, 7)$pred |>
+sarima.for(training_df_ts, 365, 1, 0, 1, 0, 1, 1, 7)$pred |>
   as.vector() -> sarima_pred #bAD
 
 test_df_ts |> 
