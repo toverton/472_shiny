@@ -84,8 +84,7 @@ cv_model1 = train(
   preProcess = c("zv", "center", "scale")
 )
 
-
-
+#-------------------------------------------------------------------------------------------------------
 
 train_indices = sample(1:nrow(gunViolence_sampled), size = .8 * nrow(gunViolence_sampled), replace = FALSE)
 gv_train = gunViolence_sampled[train_indices,]
@@ -152,6 +151,8 @@ cv_gv <- train(x = x,
                metric = "Rsquared", 
                trControl = trainControl(method = "cv", number = 10), 
                tuneGrid = parameter_grid)
+
+#-------------------------------------------------------------------------------------------------------
 
 
 
