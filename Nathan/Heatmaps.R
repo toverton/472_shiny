@@ -255,38 +255,44 @@ heatmap_perCapita_hi
 
 #---------------------------------------------------------------------------------------------------
 
-
 # Create pop-ups for incidents where n_killed ≥ 10
 LVshooting = paste(sep = "<br/>",
                    "Las Vegas Shooting",
                    "1 October 2017",
+                   "59+ Fatalities",
                    "Las Vegas, NV 89119")
 Umpqua = paste(sep = "<br/>",
                "Umpqua Community College Shooting",
                "1 October 2015",
+               "10 Fatalities",
                "Roseburg, OR 97470")
 NavyYard = paste(sep = "<br/>",
                  "Washington Navy Yard Shooting",
                  "16 September 2013",
+                 "11 Fatalities",
                  "Washington, DC 20376")
 SanBernadinoAttack = paste(sep = "<br/>",
                            "San Bernardino Attack",
                            "2 December 2015",
+                           "16 Fatalities",
                            "San Bernardino, CA 92408")
 Sutherland = paste(sep = "<br/>",
                    "Sutherland Springs Church Shooting",
                    "5 November 2017",
+                   "27 Fatalities",
                    "Sutherland Springs, TX 78161")
 Pulse = paste(sep = "<br/>",
               "Pulse Nightclub Shooting",
+              "50 Fatalities",
               "12 June 2016",
               "Orlando, FL 32806")
 Parkland = paste(sep = "<br/>",
                  "Marjory Stoneman Douglas High School Shooting",
                  "14 February 2018",
+                 "17 Fatalities",
                  "Parkland, FL 33076")
 
-heatmap_markers = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
+heatmap_massFatalities = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
                                         LVshooting, options = popupOptions(closeButton = TRUE)) %>%
   addPopups(lng = -123.2800, lat = 43.2628,
             Umpqua, options = popupOptions(closeButton = TRUE)) %>%
@@ -300,10 +306,10 @@ heatmap_markers = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
             Pulse, options = popupOptions(closeButton = TRUE)) %>%
   addPopups(lng = -80.2694, lat = 26.3045,
             Parkland, options = popupOptions(closeButton = TRUE))
-heatmap_markers
+heatmap_massFatalities
 
 
-#aa
+
 gunViolence_CO = filter(gunViolence, state == "Colorado")
 heatmap_CO = leaflet(gunViolence_CO) %>%
   addTiles() %>% setView(lng = -105.7821, lat = 38.5501, zoom = 6) %>%
@@ -321,5 +327,5 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
   addControl(html = legend_html, position = "bottomleft") %>%
   addCircleMarkers(lng = gunViolence_CO$longitude, lat = gunViolence_CO$latitude,
                    radius = 3, stroke = TRUE, fill = TRUE,
-                   fillColor = "orange", color = "black", weight = 1, fillOpacity = 1, opacity = 0.5)
+                   fillColor = "orange", color = "black", weight = .8, fillOpacity = 0.6, opacity = 0.5)
 heatmap_CO
