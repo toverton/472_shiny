@@ -11,13 +11,14 @@ library(viridis)
 library(leaflet.extras)
 library(reshape2)
 
-
-# Read in datasets
+#---------------------------------------Datasets-------------------------------------------------
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
+
+#-------------------------------------Data Cleaning-------------------------------------------------
 # Filter out NA values in longitude and latitude
 gunViolence = gunViolence %>% filter(!is.na(longitude) & !is.na(latitude))
-#----                                                             ----#
+
 yearly_pop |>
   filter(!row_number() %in% seq(1:8)) |>
   select(-c(2, 3, 4, 5, 6, 13)) |>
@@ -52,27 +53,12 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
-#----                                                             ----#
 
-# List of state capitals
-state_capitals = c("Albany", "Annapolis", "Atlanta", "Augusta", "Austin", "Baton Rouge", "Bismarck", "Boise",
-                   "Boston", "Carson City", "Charleston", "Cheyenne", "Columbia", "Columbus", "Concord",
-                   "Denver", "Des Moines", "Dover", "Frankfort", "Harrisburg", "Hartford", "Helena",
-                   "Honolulu", "Indianapolis", "Jackson", "Jefferson City", "Juneau", "Lansing", "Lincoln",
-                   "Little Rock", "Madison", "Montgomery", "Montpelier", "Nashville", "Oklahoma City",
-                   "Olympia", "Phoenix", "Pierre", "Providence", "Raleigh", "Richmond", "Sacramento",
-                   "Saint Paul", "Salem", "Salt Lake City", "Santa Fe", "Springfield", "St. Paul", "Tallahassee",
-                   "Topeka", "Trenton")
-
-
-highCasuality = filter(gunViolence, n_killed >= 10)
-map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
-  addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
-map_highCasuality                                                                            ---#
+#--------------------------------Dataset Ordered by per_hthous_killed-------------------------------------------------
+gunViolence_ordered = gunViolence[order(gunViolence$per_hthous_killed, decreasing = TRUE), ]
+head(gunViolence_ordered)                                                                           ---#
   
-  
- 
-
+#-----------------------------------Heatmap Raw Deaths-------------------------------------------------
 # Define legend HTML content with gradient
 legend_html = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 5px; border-radius: 5px; border: 1px solid black; width: 120px; text-align: center;">
                   <h4 style="color: black;">Amount of People Killed</h4>
@@ -102,7 +88,7 @@ heatmap = leaflet(gunViolence) %>%
 # Display the map
 heatmap
 
-
+#----------------------------------Heatmap Per Capita Deaths-------------------------------------------------
 legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 3px; border-radius: 5px; border: 1px solid black; width: 150px; text-align: center;">
                   <h4 style="color: black;">People Killed per 100,000</h4>
                   <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 25px; border-radius: 5px;"></div>
@@ -253,9 +239,14 @@ heatmap_perCapita_hi = leaflet(gunViolence_hawaii) %>%
   addControl(html = legend_html_perCapita, position = "bottomleft")
 heatmap_perCapita_hi
 
-#---------------------------------------------------------------------------------------------------
+#----------------------------------Map of Incidents: Deaths ≥ 10-------------------------------------------------
+highCasuality = filter(gunViolence, n_killed >= 10)
+map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
+map_highCasuality 
 
-# Create pop-ups for incidents where n_killed ≥ 10
+# With heatmap:
+# Create pop-ups for incidents
 LVshooting = paste(sep = "<br/>",
                    "Las Vegas Shooting",
                    "1 October 2017",
@@ -308,9 +299,9 @@ heatmap_massFatalities = heatmap %>% addPopups(lng = -115.1717, lat = 36.0950,
             Parkland, options = popupOptions(closeButton = TRUE))
 heatmap_massFatalities
 
-
-
+#----------------------------------Colorado, U.S.A.-------------------------------------------------
 gunViolence_CO = filter(gunViolence, state == "Colorado")
+
 heatmap_CO = leaflet(gunViolence_CO) %>%
   addTiles() %>% setView(lng = -105.7821, lat = 38.5501, zoom = 6) %>%
   addProviderTiles(providers$Esri.WorldTopoMap) %>%
@@ -329,3 +320,6 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
                    radius = 3, stroke = TRUE, fill = TRUE,
                    fillColor = "orange", color = "black", weight = .8, fillOpacity = 0.6, opacity = 0.5)
 heatmap_CO
+
+#------------------------------------------------------------------------------------------------------------
+
