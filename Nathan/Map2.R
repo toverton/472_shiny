@@ -13,11 +13,11 @@ library(leaflet.extras)
 library(reshape2)
 
 
-# Read in datasets
+#----------------------------------Datasets----------------------------------------------
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
 
-#----                                                             ----#
+#--------------------------------Data Cleaning-------------------------------------------
 yearly_pop |> 
   filter(!row_number() %in% seq(1:8)) |> 
   select(-c(2, 3, 4, 5, 6, 13)) |> 
@@ -52,24 +52,25 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
-#----                                                             ----#
+                                                           
 
+#------------------------------Informative Incident Maps-------------------------------------------------
 
-# Mapping all incidents of mass shootings, defined by U.S. statute 
-# (the Investigative Assistance for Violent Crimes Act of 2012) 
-# in the dataset
+# All incidents of MASS SHOOTINGS, defined by U.S. statute 
+# (the Investigative Assistance for Violent Crimes Act of 2012) in the dataset
+
 massShooting = filter(gunViolence, n_killed >= 3)
 map_ShootingMass = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addAwesomeMarkers(lng = massShooting$longitude, lat = massShooting$latitude, label = massShooting$n_killed)
 map_ShootingMass
 
-# Mapping all incidents where deaths were greater than or equal to ten
+# Deaths greater than or equal to ten
 highCasuality = filter(gunViolence, n_killed >= 10)
 map_highCasuality = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addAwesomeMarkers(lng = highCasuality$longitude, lat = highCasuality$latitude, label = highCasuality$n_killed)
 map_highCasuality
 
-# Mapping all incidents where there were no reported deaths
+# Incidents where there were no reported deaths
 noDeaths = filter(gunViolence, gunViolence$n_killed == 0)
 map_noDeaths = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addCircleMarkers(lng = noDeaths$longitude, lat = noDeaths$latitude, radius = 1)
