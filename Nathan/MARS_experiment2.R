@@ -10,14 +10,16 @@ library(leaflet)
 library(viridis)
 library(leaflet.extras)
 library(reshape2)
+library(mgcv)
+library(rgl)
 
-# Read in datasets
+#-------------------------------------Datasets-------------------------------------------------------------
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
 
+#----------------------------------------Data Cleaning-----------------------------------------------------
 gunViolence = na.omit(gunViolence)
 
-#----                                                             ----#
 yearly_pop |>
   filter(!row_number() %in% seq(1:8)) |>
   select(-c(2, 3, 4, 5, 6, 13)) |>
@@ -52,10 +54,9 @@ gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 
 #write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
-#----                                                             ----#
 
+#------------------------------Linear Modeling: Multiple Regression-------------------------------------------------------------
 lm = lm(gunViolence$n_killed ~ gunViolence$year + gunViolence$incident_month + gunViolence$state)
-
 
 # Assuming 'model' is your linear regression model
 
@@ -65,13 +66,6 @@ model_summary <- tidy(lm)
 # Create a nice-looking table
 kable(model_summary, format = "html", align = "c", caption = "Linear Regression Summary") %>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE)
-
-
-# Load required packages
-
-library(mgcv)
-library(rgl)
-
 
 # Fit the multivariate regression splines model
 model <- gam(n_killed ~ s(year, k = 6) + s(incident_day, k = 6) + s(state_population, k = 6), data = gunViolence)
@@ -94,7 +88,7 @@ persp3d(x = grid$year, y = grid$incident_day, z = grid$state_population, zlim = 
         xlab = "Year", ylab = "Incident Day of the Month", zlab = "State Population")
 axes3d()
 
-
+#-------------------------------------------------------------------------------------------------------
 
 
 
