@@ -13,11 +13,13 @@ library(tidyverse)
 library(lubridate)
 library(reshape2)
 
+#-----------------------------------Datasets------------------------------------------------------------
 gunViolence = read_csv("final_df.csv")
 yearly_pop = read_excel("yearly_pop.xlsx")
 
+#-------------------------------------Data Cleaning------------------------------------------------------
 gunViolence = na.omit(gunViolence)
-#----                                                                            ----#
+
 yearly_pop |> 
   filter(!row_number() %in% seq(1:8)) |> 
   select(-c(2, 3, 4, 5, 6, 13)) |> 
@@ -50,8 +52,8 @@ gunViolence = gunViolence |>
 #adding number killed per 100,000
 gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
-#----                                                                            ----#
 
+#-----------------------------------MARS----------------------------------------------------------
 gunViolence2 = select(gunViolence, 
                      -incident_characteristics, -location_description, 
                      -incident_id, -date, 
