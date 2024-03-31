@@ -10,11 +10,10 @@ library(forcats)
 library(leaflet)
 library(earth)
 
-# Read in dataset
-
+#---------------------------------------Datasets-------------------------------------------------
 gunViolence = read.csv("final_df.csv")
 
-
+#---------------------------------------Leaflet Map-------------------------------------------------
 
 # create map using Leaflet package
 originalMap = leaflet() %>%
@@ -27,8 +26,7 @@ originalMap = leaflet() %>%
 # original map output
 originalMap
 
-
-# Maps with Filtered Data
+#------------------------------Maps with Filtered Data by Year-------------------------------------------------
 
 # 2013 map data
 gunViolence_2013 = filter(gunViolence, year == "2013")
@@ -84,10 +82,7 @@ map_2018 = leaflet() %>% addTiles() %>% setView(lng = -98.5795, lat = 39.8283, z
 map_2018
 
 
-
-
-
-#----                                                                       ----#
+#------------------------------------Choropleth Attempt-----------------------------------------------------
 # From internet:  
 table(gunViolence$state)
 
@@ -115,4 +110,4 @@ m %>% addPolygons(
   fillOpacity = 0.7)
 m
 
-#----                                                                       ----#
+#---------------------------------------------------------------------------------------------
