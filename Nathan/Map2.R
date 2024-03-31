@@ -18,6 +18,10 @@ gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
 
 #--------------------------------Data Cleaning-------------------------------------------
+# Filter out NA values in longitude and latitude
+gunViolence = gunViolence %>% 
+  filter(!is.na(longitude) & !is.na(latitude))
+
 yearly_pop |> 
   filter(!row_number() %in% seq(1:8)) |> 
   select(-c(2, 3, 4, 5, 6, 13)) |> 
@@ -75,8 +79,7 @@ noDeaths = filter(gunViolence, gunViolence$n_killed == 0)
 map_noDeaths = leaflet() %>% addTiles %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
   addCircleMarkers(lng = noDeaths$longitude, lat = noDeaths$latitude, radius = 1)
 map_noDeaths
-#---                                                                                    ---#
 
-# Filter out NA values in longitude and latitude
-gunViolence = gunViolence %>% 
-  filter(!is.na(longitude) & !is.na(latitude))
+#-------------------------------------------------------------------------------------------------------
+
+
