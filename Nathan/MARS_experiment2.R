@@ -66,18 +66,20 @@ model_summary = tidy(lm)
 knitr::kable(model_summary, format = "html", align = "c", caption = "Linear Regression Summary") %>%
   kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 
-model <- gam(n_killed ~ s(year, k = 6) + s(incident_day, k = 6) + s(state_population, k = 6), data = gunViolence)
+model = gam(n_killed ~ s(year, k = 6) + s(incident_day, k = 6) + s(state_population, k = 6), data = gunViolence)
 
 # Create a grid of predictor values for plotting
-year_values <- seq(min(gunViolence$year), max(gunViolence$year), length.out = 100)
-incident_day_values <- seq(min(gunViolence$incident_day), max(gunViolence$incident_day), length.out = 100)
-state_population_values <- seq(min(gunViolence$state_population), max(gunViolence$state_population), length.out = 100)
-grid <- expand.grid(year = year_values, incident_day = incident_day_values, state_population = state_population_values)
-# Sort the grid dataframe by year and incident_day
-grid <- grid[order(grid$year, grid$incident_day, grid$state_population), ]
+year_values = seq(min(gunViolence$year), max(gunViolence$year), length.out = 100)
 
-# Generate predicted values
-pred_values <- predict(model, newdata = grid, type = "response")
+incident_day_values = seq(min(gunViolence$incident_day), max(gunViolence$incident_day), length.out = 100)
+
+state_population_values = seq(min(gunViolence$state_population), max(gunViolence$state_population), length.out = 100)
+
+grid = expand.grid(year = year_values, incident_day = incident_day_values, state_population = state_population_values)
+  grid = grid[order(grid$year, grid$incident_day, grid$state_population), ]
+    grid = grid[!duplicated(grid), ]
+
+pred_values = predict(model, newdata = grid, type = "response")
 
 # Plot
 open3d()
