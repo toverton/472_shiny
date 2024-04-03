@@ -12,12 +12,15 @@ library(leaflet.extras)
 library(reshape2)
 library(mgcv)
 library(rgl)
+library(broom)
+library(knitr)
+library(kableExtra)
 
 #-------------------------------------Datasets-------------------------------------------------------------
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
 
-#----------------------------------------Data Cleaning-----------------------------------------------------
+#--------------------------------------Data Cleaning------------------------------------------------------
 gunViolence = na.omit(gunViolence)
 
 yearly_pop |>
@@ -58,16 +61,11 @@ gunViolence |>
 #------------------------------Linear Modeling: Multiple Regression-------------------------------------------------------------
 lm = lm(gunViolence$n_killed ~ gunViolence$year + gunViolence$incident_month + gunViolence$state)
 
-# Assuming 'model' is your linear regression model
+model_summary = tidy(lm)
 
-# Extract summary information
-model_summary <- tidy(lm)
+knitr::kable(model_summary, format = "html", align = "c", caption = "Linear Regression Summary") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 
-# Create a nice-looking table
-kable(model_summary, format = "html", align = "c", caption = "Linear Regression Summary") %>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE)
-
-# Fit the multivariate regression splines model
 model <- gam(n_killed ~ s(year, k = 6) + s(incident_day, k = 6) + s(state_population, k = 6), data = gunViolence)
 
 # Create a grid of predictor values for plotting
