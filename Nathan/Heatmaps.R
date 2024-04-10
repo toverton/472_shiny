@@ -111,8 +111,123 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   addControl(html = legend_html_perCapita, position = "bottomleft")
 heatmap_perCapita
 
+#----------------------------------Heatmap Per Capita Deaths (2013)-------------------------------------------------
+gunViolence_2013 = filter(gunViolence, year == "2013")
 
-# https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
+heatmap_perCapita_2013 = leaflet(gunViolence_2013) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2013$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2013
+
+#----------------------------------Heatmap Per Capita Deaths (2014)-------------------------------------------------
+gunViolence_2014 = filter(gunViolence, year == "2014")
+
+heatmap_perCapita_2014 = leaflet(gunViolence_2014) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2014$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2014
+
+#----------------------------------Heatmap Per Capita Deaths (2015)-------------------------------------------------
+gunViolence_2015 = filter(gunViolence, year == "2015")
+
+heatmap_perCapita_2015 = leaflet(gunViolence_2015) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2015$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2015
+
+#----------------------------------Heatmap Per Capita Deaths (2016)-------------------------------------------------
+gunViolence_2016 = filter(gunViolence, year == "2016")
+
+heatmap_perCapita_2016 = leaflet(gunViolence_2016) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2016$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2016
+
+#----------------------------------Heatmap Per Capita Deaths (2017)-------------------------------------------------
+gunViolence_2017 = filter(gunViolence, year == "2017")
+
+heatmap_perCapita_2017 = leaflet(gunViolence_2017) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2017$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2017
+
+#----------------------------------Heatmap Per Capita Deaths (2018)-------------------------------------------------
+gunViolence_2018 = filter(gunViolence, year == "2018")
+
+heatmap_perCapita_2018 = leaflet(gunViolence_2018) %>%
+  addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  addHeatmap(
+    lng = ~longitude,  
+    lat = ~latitude,  
+    intensity = gunViolence_2018$per_hthous_killed,  
+    blur = 20,    
+    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    radius = 18,  
+    gradient = c("blue", "green", "yellow", "red")  
+  ) %>%
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
+heatmap_perCapita_2018
+
+
+
+# U.S. Geographical Region Divisions: https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
 #-------------------------------------Southern U.S.A-------------------------------------------------
 US_South = c("Alabama", 'Arkansas', 
              "Delaware", "Florida", "Georgia", 
