@@ -118,6 +118,8 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   addCircleMarkers(lng = -81.3767, lat = 28.5195, radius = 5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
   addCircleMarkers(lng = -80.2694, lat = 26.3045, radius = 5, stroke = TRUE, fill = TRUE,
+                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
+  addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5)
 heatmap_perCapita
 
