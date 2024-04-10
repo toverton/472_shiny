@@ -52,8 +52,6 @@ gunViolence = gunViolence |>
 gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 
-#write.csv(final_df, "~/Desktop/final_df.csv", row.names = FALSE)
-
 #--------------------------------Dataset Ordered by per_hthous_killed-------------------------------------------------
 gunViolence_ordered = gunViolence[order(gunViolence$per_hthous_killed, decreasing = TRUE), ]
 head(gunViolence_ordered)                                                                           ---#
@@ -120,9 +118,9 @@ heatmap_perCapita_2013 = leaflet(gunViolence_2013) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2013$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2013$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -139,9 +137,9 @@ heatmap_perCapita_2014 = leaflet(gunViolence_2014) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2014$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2014$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -158,9 +156,9 @@ heatmap_perCapita_2015 = leaflet(gunViolence_2015) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2015$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2015$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -177,9 +175,9 @@ heatmap_perCapita_2016 = leaflet(gunViolence_2016) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2016$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2016$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -196,9 +194,9 @@ heatmap_perCapita_2017 = leaflet(gunViolence_2017) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2017$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2017$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -215,9 +213,9 @@ heatmap_perCapita_2018 = leaflet(gunViolence_2018) %>%
   addHeatmap(
     lng = ~longitude,  
     lat = ~latitude,  
-    intensity = gunViolence_2018$per_hthous_killed,  
+    intensity = gunViolence$per_hthous_killed,  
     blur = 20,    
-    max = max(gunViolence$per_hthous_killed, na.rm = TRUE),      
+    max = max(gunViolence_2018$per_hthous_killed, na.rm = TRUE),      
     radius = 18,  
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
@@ -225,9 +223,8 @@ heatmap_perCapita_2018 = leaflet(gunViolence_2018) %>%
   addControl(html = legend_html_perCapita, position = "bottomleft")
 heatmap_perCapita_2018
 
-
-
-# U.S. Geographical Region Divisions: https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
+#----------------------------------U.S. Geographical Region Divisions-------------------------------------------------
+# Source: https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
 #-------------------------------------Southern U.S.A-------------------------------------------------
 US_South = c("Alabama", 'Arkansas', 
              "Delaware", "Florida", "Georgia", 
