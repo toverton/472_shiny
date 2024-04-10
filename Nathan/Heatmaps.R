@@ -88,7 +88,7 @@ heatmap
 
 #----------------------------------Heatmap Per Capita Deaths-------------------------------------------------
 legend_html_perCapita = '<div style="background-color: rgba(255, 255, 255, 0.4); padding: 3px; border-radius: 5px; border: 1px solid black; width: 150px; text-align: center;">
-                  <h4 style="color: black;">People Killed per 100,000</h4>
+                  <h4 style="color: black;">Fatalities per 100,000</h4>
                   <div style="background: linear-gradient(to right, blue, green, yellow, red); height: 25px; border-radius: 5px;"></div>
                   <div> Low ------> High </div>
               </div>'
