@@ -106,19 +106,19 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   ) %>%
   addScaleBar(position = "topright") %>%
   addControl(html = legend_html_perCapita, position = "bottomleft") %>% 
-  addCircleMarkers(lng = -123.2800, lat = 43.2628, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -123.2800, lat = 43.2628, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -76.9977, lat = 38.8730, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -76.9977, lat = 38.8730, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -117.2770, lat = 34.0758, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -117.2770, lat = 34.0758, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>%
-  addCircleMarkers(lng = -98.0564, lat = 29.2733, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -98.0564, lat = 29.2733, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -81.3767, lat = 28.5195, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -81.3767, lat = 28.5195, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -80.2694, lat = 26.3045, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -80.2694, lat = 26.3045, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 5, stroke = TRUE, fill = TRUE,
+  addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5)
 heatmap_perCapita
 
