@@ -14,6 +14,8 @@ library(reshape2)
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
 
+
+
 #-------------------------------------Data Cleaning-------------------------------------------------
 # Filter out NA values in longitude and latitude
 gunViolence = gunViolence %>% filter(!is.na(longitude) & !is.na(latitude))
@@ -121,6 +123,7 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5)
 heatmap_perCapita
+
 
 #----------------------------------Heatmap Per Capita Deaths (2013)-------------------------------------------------
 gunViolence_2013 = filter(gunViolence, year == "2013")
@@ -446,5 +449,31 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
                    fillColor = "orange", color = "black", weight = .8, fillOpacity = 0.6, opacity = 0.5)
 heatmap_CO
 
-#------------------------------------------------------------------------------------------------------------
+#------------------------------------Choropleth----------------------------------------------------------------
 
+gun_violence_restrictions <- read_csv("gun_violence_restrictions.csv")
+View(gun_violence_restrictions)
+
+states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
+class(states)
+names(states)
+
+
+m <- leaflet(states) %>%
+  setView(-96, 37.8, 4) %>%
+  addProviderTiles("MapBox", options = providerTileOptions(
+    id = "mapbox.light",
+    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% addPolygons()
+m
+
+#bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
+pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
+
+m = m %>% addPolygons(
+  fillColor = ~pal(gunViolence$n_killed),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)
+m
