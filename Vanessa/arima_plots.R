@@ -128,3 +128,7 @@ par_auto_corr_lagged_df |>
                                         by = 7), 
                                     1))
 #ggsave("pacf_post_diff.png", width = 12, height = 7)
+
+test_df |> 
+  ggplot(aes(x = date, y = total_killed)) + 
+  geom_line()

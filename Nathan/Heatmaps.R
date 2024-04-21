@@ -459,6 +459,16 @@ class(states)
 names(states)
 
 
+##-##          ##-##
+##-## V's Code ##-## Run with updated gun_violence_restrictions .csv!
+##-##          ##-##
+gun_violence_restrictions |> 
+  mutate_if(is.numeric,as.factor) -> restr #As factor the columns.
+
+states$background_checks_private_sales <- gun_violence_restrictions$background_checks_private_sales
+##-##          ##-##
+##-##          ##-##
+
 m <- leaflet(states) %>%
   setView(-96, 37.8, 4) %>%
   addProviderTiles("MapBox", options = providerTileOptions(
@@ -467,10 +477,10 @@ m <- leaflet(states) %>%
 m
 
 #bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-pal <- colorBin("YlOrRd", domain = states$density, bins = bins)
+pal <- colorBin("YlOrRd", domain = states$background_checks_private_sales, bins = bins)
 
 m = m %>% addPolygons(
-  fillColor = ~pal(gunViolence$n_killed),
+  fillColor = ~pal(background_checks_private_sales),
   weight = 2,
   opacity = 1,
   color = "white",
