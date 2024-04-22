@@ -13,8 +13,7 @@ library(reshape2)
 #---------------------------------------Datasets-------------------------------------------------
 gunViolence = read.csv("final_df.csv")
 yearly_pop = read_excel("./yearly_pop.xlsx")
-
-
+gun_violence_restrictions = read_csv("gun_violence_restrictions.csv")
 
 #-------------------------------------Data Cleaning-------------------------------------------------
 # Filter out NA values in longitude and latitude
@@ -121,7 +120,7 @@ heatmap_perCapita = leaflet(gunViolence) %>%
   addCircleMarkers(lng = -80.2694, lat = 26.3045, radius = 4.5, stroke = TRUE, fill = TRUE,
                    fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
   addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5)
+                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) 
 heatmap_perCapita
 
 
@@ -449,10 +448,10 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
                    fillColor = "orange", color = "black", weight = .8, fillOpacity = 0.6, opacity = 0.5)
 heatmap_CO
 
-#------------------------------------Choropleth----------------------------------------------------------------
+#----------------------------------------Choropleth----------------------------------------------------
 
-gun_violence_restrictions <- read_csv("gun_violence_restrictions.csv")
-View(gun_violence_restrictions)
+# Moved to top of file:
+# gun_violence_restrictions <- read_csv("gun_violence_restrictions.csv")
 
 states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
 class(states)
@@ -476,14 +475,42 @@ m <- leaflet(states) %>%
     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% addPolygons()
 m
 
-#bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-pal <- colorBin("YlOrRd", domain = states$background_checks_private_sales, bins = bins)
+pal <- colorBin("Greys", domain = states$background_checks_private_sales, bins = 2)
 
-m = m %>% addPolygons(
+states_restr = m %>% addPolygons(
   fillColor = ~pal(background_checks_private_sales),
   weight = 2,
   opacity = 1,
   color = "white",
   dashArray = "3",
-  fillOpacity = 0.7)
-m
+  fillOpacity = 0.7, options = pathOptions(pane = "states_restr"))
+states_restr
+
+
+map_combined = leaflet(states) %>% setView(-96, 37.8, 4) %>% addProviderTiles("MapBox", options = providerTileOptions(id = "mapbox.light", accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% 
+  addPolygons(fillColor = ~pal(background_checks_private_sales), weight = 2, opacity = 1, color = "black", dashArray = "3", fillOpacity = 0.35) %>% 
+  addHeatmap(data = gunViolence, lng = ~longitude, lat = ~latitude, intensity = gunViolence$per_hthous_killed, 
+             blur = 20, max = max(gunViolence$per_hthous_killed, na.rm = TRUE), radius = 18, gradient = c("blue", "green", "yellow", "red"), group = "b") %>% 
+  addLayersControl(overlayGroups = c("b"))
+
+map_combined
+
+leaflet() %>% 
+  addTiles() %>% 
+    setView(-96, 37.8, 4) %>% 
+      addMapPane("heatmap_perCapita", zIndex = 420) %>% 
+        addMapPane("states_restr", zIndex = 410) %>% 
+            addHeatmap(data = gunViolence, lng = ~longitude, lat = ~latitude, 
+                       intensity = gunViolence$per_hthous_killed, 
+                       blur = 20, max = max(gunViolence$per_hthous_killed, na.rm = TRUE), 
+                       radius = 18, gradient = c("blue", "green", "yellow", "red"),  
+                       options = pathOptions(pane = "heatmap_perCapita")) %>% 
+                        addPolygons(
+                         fillColor = ~pal(background_checks_private_sales),
+                         weight = 2,
+                         opacity = 1,
+                         color = "white",
+                         dashArray = "3",
+                         fillOpacity = 0.7, options = pathOptions(pane = "states_restr")
+                         )
+
