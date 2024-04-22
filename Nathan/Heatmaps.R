@@ -483,7 +483,7 @@ states_restr = m %>% addPolygons(
   opacity = 1,
   color = "white",
   dashArray = "3",
-  fillOpacity = 0.7, options = pathOptions(pane = "states_restr"))
+  fillOpacity = 0.7)
 states_restr
 
 
@@ -495,22 +495,5 @@ map_combined = leaflet(states) %>% setView(-96, 37.8, 4) %>% addProviderTiles("M
 
 map_combined
 
-leaflet() %>% 
-  addTiles() %>% 
-    setView(-96, 37.8, 4) %>% 
-      addMapPane("heatmap_perCapita", zIndex = 420) %>% 
-        addMapPane("states_restr", zIndex = 410) %>% 
-            addHeatmap(data = gunViolence, lng = ~longitude, lat = ~latitude, 
-                       intensity = gunViolence$per_hthous_killed, 
-                       blur = 20, max = max(gunViolence$per_hthous_killed, na.rm = TRUE), 
-                       radius = 18, gradient = c("blue", "green", "yellow", "red"),  
-                       options = pathOptions(pane = "heatmap_perCapita")) %>% 
-                        addPolygons(
-                         fillColor = ~pal(background_checks_private_sales),
-                         weight = 2,
-                         opacity = 1,
-                         color = "white",
-                         dashArray = "3",
-                         fillOpacity = 0.7, options = pathOptions(pane = "states_restr")
-                         )
+
 
