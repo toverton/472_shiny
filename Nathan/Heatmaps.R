@@ -9,6 +9,7 @@ library(leaflet)
 library(viridis)
 library(leaflet.extras)
 library(reshape2)
+library(htmltools)
 
 #---------------------------------------Datasets-------------------------------------------------
 gunViolence = read.csv("final_df.csv")
@@ -52,9 +53,9 @@ gunViolence = gunViolence |>
 gunViolence |>
   mutate(per_hthous_killed = ((n_killed / state_population)*100000)) -> gunViolence
 
-#--------------------------------Dataset Ordered by per_hthous_killed-------------------------------------------------
+#Dataset Ordered by gunViolence$per_hthous_killed
 gunViolence_ordered = gunViolence[order(gunViolence$per_hthous_killed, decreasing = TRUE), ]
-head(gunViolence_ordered)                                                                           ---#
+head(gunViolence_ordered)                                                                           
   
 #-----------------------------------Heatmap Raw Deaths-------------------------------------------------
 # Define legend HTML content with gradient
@@ -448,19 +449,19 @@ heatmap_CO = leaflet(gunViolence_CO) %>%
                    fillColor = "orange", color = "black", weight = .8, fillOpacity = 0.6, opacity = 0.5)
 heatmap_CO
 
-#----------------------------------------Choropleth----------------------------------------------------
+#-----------------------------------------------Choropleth----------------------------------------------------
 
 # Moved to top of file:
 # gun_violence_restrictions <- read_csv("gun_violence_restrictions.csv")
 
-states <- geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
+states = geojsonio::geojson_read("https://rstudio.github.io/leaflet/json/us-states.geojson", what = "sp")
 class(states)
 names(states)
 
 
-##-##          ##-##
-##-## V's Code ##-## Run with updated gun_violence_restrictions .csv!
-##-##          ##-##
+##-##                ##-##
+##-## Vanessa's Code ##-## Run with updated gun_violence_restrictions.csv!
+##-##                ##-##
 gun_violence_restrictions |> 
   mutate_if(is.numeric,as.factor) -> restr #As factor the columns.
 
@@ -468,14 +469,13 @@ states$background_checks_private_sales <- gun_violence_restrictions$background_c
 ##-##          ##-##
 ##-##          ##-##
 
-m <- leaflet(states) %>%
+m = leaflet(states) %>%
   setView(-96, 37.8, 4) %>%
   addProviderTiles("MapBox", options = providerTileOptions(
     id = "mapbox.light",
     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% addPolygons()
-m
 
-pal <- colorBin("Greys", domain = states$background_checks_private_sales, bins = 2)
+pal = colorBin("Spectral", domain = states$background_checks_private_sales, bins = 2)
 
 states_restr = m %>% addPolygons(
   fillColor = ~pal(background_checks_private_sales),
@@ -486,14 +486,31 @@ states_restr = m %>% addPolygons(
   fillOpacity = 0.7)
 states_restr
 
+# Choropleth and Heatmap overlay
+combined_map = leaflet(states) %>%
+  setView(lng = -96, lat = 37.8, zoom = 4) %>%
+  addProviderTiles("MapBox", options = providerTileOptions(id = "mapbox.light", accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
+  addPolygons(data = states,
+              fillColor = ~pal(background_checks_private_sales), 
+              weight = 2, 
+              opacity = 1, 
+              color = "black", 
+              dashArray = "3", 
+              fillOpacity = 0.65,
+              group = "Polygons") %>%
+  addHeatmap(data = gunViolence, 
+             lng = ~longitude, 
+             lat = ~latitude, 
+             intensity = gunViolence$per_hthous_killed, 
+             blur = 20, 
+             max = max(gunViolence$per_hthous_killed, na.rm = TRUE), 
+             radius = 18, 
+             gradient = c("blue", "green", "yellow", "red"), 
+             group = "Heatmap") %>%
+  addLayersControl(overlayGroups = c("Heatmap", "Polygons"),
+                   options = layersControlOptions(collapsed = FALSE))
 
-map_combined = leaflet(states) %>% setView(-96, 37.8, 4) %>% addProviderTiles("MapBox", options = providerTileOptions(id = "mapbox.light", accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% 
-  addPolygons(fillColor = ~pal(background_checks_private_sales), weight = 2, opacity = 1, color = "black", dashArray = "3", fillOpacity = 0.35) %>% 
-  addHeatmap(data = gunViolence, lng = ~longitude, lat = ~latitude, intensity = gunViolence$per_hthous_killed, 
-             blur = 20, max = max(gunViolence$per_hthous_killed, na.rm = TRUE), radius = 18, gradient = c("blue", "green", "yellow", "red"), group = "b") %>% 
-  addLayersControl(overlayGroups = c("b"))
-
-map_combined
+combined_map
 
 
 
