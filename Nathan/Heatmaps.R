@@ -10,6 +10,7 @@ library(viridis)
 library(leaflet.extras)
 library(reshape2)
 library(htmltools)
+library(htmlwidgets)
 
 #---------------------------------------Datasets-------------------------------------------------
 gunViolence = read.csv("final_df.csv")
