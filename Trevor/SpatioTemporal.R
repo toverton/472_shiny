@@ -13,6 +13,10 @@ library("gstat")
 library("sp")
 library("tidyr")
 library("Metrics")
+library("leaflet")
+library("leaflet.extras")
+
+graph = 0
 
 # Basic data setup
 
@@ -44,9 +48,9 @@ if(case == "I"){
   ST_lm<-lm(n_killed ~ (longitude + latitude + date) ^ 2 + ., data = fatal2)
   real_2017<-select(data_valid,'n_killed')
 } else if (case == "P") {
-  per_cap_data<-select(data_test,c('n_killed','date','longitude','latitude'))
+  per_cap_data<-select(data_test,c('per_hthous_killed','date','longitude','latitude'))
   per_cap<-cbind(per_cap_data, S)
-  ST_lm<-lm(n_killed ~ (longitude + latitude + date) ^ 2 + ., data = per_cap)
+  ST_lm<-lm(per_hthous_killed ~ (longitude + latitude + date) ^ 2 + ., data = per_cap)
   real_2017<-select(data_valid,'per_hthous_killed')
 }
 
@@ -60,3 +64,41 @@ S<-eval_basis(basis = G,
 colnames(S) <-paste0("B",1:ncol(S))
 predict_data<-predict(ST_lm,cbind(valid_data,S))
 rmse(t(as.vector(real_2017)),as.vector(predict_data))
+
+if(graph == 1){
+  valid_data$prediction <- predict_data
+  valid_data$real <- as.vector(real_2017[,1])
+  max_val <- max(valid_data$real, na.rm = TRUE)
+
+  heatmap_predict <- leaflet(valid_data) %>%
+    addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+    addProviderTiles(providers$Esri.WorldTopoMap) %>%
+    addHeatmap(
+      lng = ~longitude,  
+      lat = ~latitude,  
+      intensity = ~prediction,  
+      blur = 20,    
+      max = max_val,      
+      radius = 20,  
+      gradient = c("blue", "green", "yellow", "red")  
+    )
+
+  heatmap_real <- leaflet(valid_data) %>%
+    addTiles() %>% setView(lng = -98.5795, lat = 39.8283, zoom = 3.5) %>%
+    addProviderTiles(providers$Esri.WorldTopoMap) %>%
+    addHeatmap(
+      lng = ~longitude,  
+      lat = ~latitude,  
+      intensity = ~real,  
+      blur = 20,    
+      max = max_val,      
+      radius = 20,  
+      gradient = c("blue", "green", "yellow", "red")  
+    )
+  
+  heatmap_predict
+  print("pause between maps, press anything to continue")
+  readline()
+  
+  heatmap_real
+}

@@ -1,33 +1,41 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    https://shiny.posit.co/
-#
-
 library(shiny)
+library(leaflet)
 
-# Define UI for application that draws a histogram
-fluidPage(
+# Choices for drop-downs
+vars <- c("Number Killed" = 'n_killed',
+          "Number Injured" = 'n_injured',
+          "Killed per Capita" = 'per_hthous_killed'
+)
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
+navbarPage("Gun Violence", id="nav",
+  tabPanel("Interactive map",
+    div(class="outer",
+      tags$head(
+      # Include our custom CSS
+        includeCSS("styles.css"),
+        includeScript("gomap.js")
+      ),
+      # If not using custom CSS, set height of leafletOutput to a number instead of percent
+      leafletOutput("map", width="100%", height="100%"),
+      # Shiny versions prior to 0.11 should use class = "modal" instead.
+      absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+        draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+        width = 330, height = "auto",
+        h2("Gun Violence Explorer"),
+        selectInput("incident", "Incident Type", vars, selected = "n_killed"),
+        sliderInput("year", "Year:",
+                    min = 2013, max = 2018,
+                    value = c(2013, 2018)
+                    )
+      ),
     )
+  ),
+  tabPanel("Data Explorer",
+    fluidRow(
+      column(3,
+        selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
+      )
+    ),
+    hr()
+  ),
 )
