@@ -15,3 +15,5 @@ cleantable <-gun_data %>% select(
   state_population,
   state
 )
+
+gun_data$date = as.Date(gun_data$date)

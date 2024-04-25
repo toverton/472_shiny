@@ -1,5 +1,6 @@
 library(shiny)
 library(leaflet)
+library(DT)
 
 # Choices for drop-downs
 vars <- c("Number Killed" = 'n_killed',
@@ -26,7 +27,8 @@ navbarPage("Gun Violence", id="nav",
         sliderInput("year", "Year:",
                     min = 2013, max = 2018,
                     value = c(2013, 2018)
-                    )
+                    ),
+        plotOutput("timeseries", height=200)
       ),
     )
   ),
@@ -36,6 +38,7 @@ navbarPage("Gun Violence", id="nav",
         selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
       )
     ),
-    hr()
+    hr(),
+    DT::dataTableOutput("cleantable")
   ),
 )
