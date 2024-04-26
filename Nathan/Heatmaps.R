@@ -108,21 +108,7 @@ heatmap_perCapita = leaflet(gunViolence) %>%
     gradient = c("blue", "green", "yellow", "red")  
   ) %>%
   addScaleBar(position = "topright") %>%
-  addControl(html = legend_html_perCapita, position = "bottomleft") %>% 
-  addCircleMarkers(lng = -123.2800, lat = 43.2628, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -76.9977, lat = 38.8730, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -117.2770, lat = 34.0758, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>%
-  addCircleMarkers(lng = -98.0564, lat = 29.2733, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -81.3767, lat = 28.5195, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -80.2694, lat = 26.3045, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) %>% 
-  addCircleMarkers(lng = -115.1717, lat = 36.0950, radius = 4.5, stroke = TRUE, fill = TRUE,
-                   fillColor = "lightblue", color = "black", weight = .8, fillOpacity = 1, opacity = 0.5) 
+  addControl(html = legend_html_perCapita, position = "topright")
 heatmap_perCapita
 
 
@@ -470,6 +456,9 @@ states$background_checks_private_sales <- gun_violence_restrictions$background_c
 ##-##          ##-##
 ##-##          ##-##
 
+states$concealCarry = gun_violence_restrictions$ccp_required
+
+
 m = leaflet(states) %>%
   setView(-96, 37.8, 4) %>%
   addProviderTiles("MapBox", options = providerTileOptions(
@@ -477,15 +466,26 @@ m = leaflet(states) %>%
     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% addPolygons()
 
 pal = colorBin("Spectral", domain = states$background_checks_private_sales, bins = 2)
+pal = colorBin("Spectral", domain = states$concealCarry, bins = 2)
+  
 
-states_restr = m %>% addPolygons(
+states_restr_privBckgrndChk = m %>% addPolygons(
   fillColor = ~pal(background_checks_private_sales),
   weight = 2,
   opacity = 1,
   color = "white",
   dashArray = "3",
   fillOpacity = 0.7)
-states_restr
+states_restr_privBckgrndChk
+
+states_restr_concealCarryPermit = m %>% addPolygons(
+  fillColor = ~pal(states$concealCarry),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7)
+states_restr_concealCarryPermit
 
 # Choropleth and Heatmap overlay
 combined_map = leaflet(states) %>%
@@ -509,9 +509,11 @@ combined_map = leaflet(states) %>%
              gradient = c("blue", "green", "yellow", "red"), 
              group = "Heatmap") %>%
   addLayersControl(overlayGroups = c("Heatmap", "Polygons"),
-                   options = layersControlOptions(collapsed = FALSE))
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+  addScaleBar(position = "topright") %>%
+  addControl(html = legend_html_perCapita, position = "bottomleft")
 
 combined_map
 
-#----------------------------------End of Document-------------------------------------------------
+#---------------------------------------------End of Document----------------------------------------------------
 
